@@ -1,8 +1,8 @@
 use std::env;
 
+#[derive(Debug)]
 pub struct ParsedArgs {
 	pub flags: Vec<char>,
-	pub long_flags: Vec<String>,
 	pub args: Vec<String>,
 }
 
@@ -10,7 +10,6 @@ impl ParsedArgs {
 	fn new() -> ParsedArgs {
 		ParsedArgs {
 			flags: Vec::new(),
-			long_flags: Vec::new(),
 			args: Vec::new(),
 		}
 	}
@@ -44,11 +43,7 @@ pub fn parse() -> ParsedArgs {
 		}
 
 		if arg.starts_with("--") {
-			// trim the leading -- from --long-flag
-			let arg = arg[2..].to_string();
-
-			parsed_args.long_flags.push(arg);
-			continue;
+			unimplemented!("long flags will be implemented later");
 		}
 
 		if arg.starts_with("-") {
