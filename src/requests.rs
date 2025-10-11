@@ -8,7 +8,7 @@ fn serialize_params(params: &Vec<(&str, &str)>) -> Result<String, String> {
 		.map_err(|_| format!("failed to serialize parameters: {:?}", params))
 }
 
-pub fn sync_get(url: &str, params: Vec<(&str, &str)>) -> Result<String, String> {
+pub fn sync_get(url: &str, params: Vec<(&str, &str)>) -> Result<serde_json::Value, String> {
 	let client = reqwest::blocking::Client::new();
 
 	let mut headers = HeaderMap::new();
@@ -32,5 +32,9 @@ pub fn sync_get(url: &str, params: Vec<(&str, &str)>) -> Result<String, String> 
 		));
 	}
 
-	response.text().map_err(|_| "failed to get response text".to_string())
+	let text = response.text()
+		.map_err(|_| "failed to get response text".to_string())?;
+
+	serde_json::from_str(&text)
+		.map_err(|_| "failed to parse JSON".to_string())
 }
