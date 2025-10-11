@@ -3,8 +3,8 @@ use serde_urlencoded;
 
 const USER_AGENT: &str = "phitazero/modman";
 
-async fn async_get(url: &str, params: Vec<(&str, &str)>) -> String {
-	let client = reqwest::Client::new();
+pub fn sync_get(url: &str, params: Vec<(&str, &str)>) -> String {
+	let client = reqwest::blocking::Client::new();
 
 	let mut headers = HeaderMap::new();
 	headers.insert(header::USER_AGENT, HeaderValue::from_static(USER_AGENT));
@@ -16,14 +16,7 @@ async fn async_get(url: &str, params: Vec<(&str, &str)>) -> String {
 		.get(full_url)
 		.headers(headers)
 		.send()
-		.await
 		.unwrap();
 
-	response.text().await.unwrap()
-}
-
-pub fn sync_get(url: &str, params: Vec<(&str, &str)>) -> String {
-	let runtime = tokio::runtime::Runtime::new().unwrap();
-
-	runtime.block_on(async_get(url, params))
+	response.text().unwrap()
 }
