@@ -8,6 +8,19 @@ pub struct ParsedArgs {
 	pub args: Vec<String>,
 }
 
+impl ParsedArgs {
+	pub fn exhaust_option(&mut self, option: char) -> bool {
+		match self.options.iter().position(|f| *f == option) {
+			Some(index) => {
+				self.options.remove(index);
+				true
+			},
+			None => false
+		}
+	}
+}
+
+
 pub fn parse() -> ParsedArgs {
 	let mut argv = env::args();
 
