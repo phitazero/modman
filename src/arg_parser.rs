@@ -3,9 +3,9 @@ use std::process::exit;
 
 #[derive(Debug)]
 pub struct ParsedArgs {
-	operation: char,
-	options: Vec<char>,
-	args: Vec<String>,
+	pub operation: char,
+	pub options: Vec<char>,
+	pub args: Vec<String>,
 }
 
 pub fn parse() -> ParsedArgs {
