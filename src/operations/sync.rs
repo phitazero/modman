@@ -1,11 +1,42 @@
 use crate::requests;
 use crate::arg_parser::ParsedArgs;
+use std::process::exit;
 
 const PRINT_VERSION_CHUNKS: usize = 5;
 
 pub fn dispatch(mut parsed_args: ParsedArgs) {
 	if parsed_args.exhaust_option('h') {
 		print_help();
+	}
+
+	if parsed_args.exhaust_option('i') {
+		command_info(parsed_args.args);
+	}
+}
+
+fn command_info(args: Vec<String>) {
+	if args.len() == 0 {
+		eprintln!("error: no target specified");
+		exit(1);
+	}
+
+	let mut n_successful = 0;
+
+	for arg in &args {
+		let result = print_info(&arg);
+
+		match result {
+			Ok(()) => { n_successful += 1; },
+			Err(err_msg) => {
+				eprintln!("error: failed to fetch info about \'{}\'", arg);
+				eprintln!("{}", err_msg);
+				println!("Skipped \'{}\'\n", arg)
+			},
+		}
+	}
+
+	if n_successful == 0 {
+		eprintln!("All requests failed!");
 	}
 }
 
