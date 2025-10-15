@@ -9,7 +9,7 @@ pub fn dispatch(mut parsed_args: ParsedArgs) {
 	}
 }
 
-fn print_info(slug: String) -> Result<(), String> {
+fn print_info(slug: &String) -> Result<(), String> {
 	println!("\n");
 
 	let url = format!("https://api.modrinth.com/v2/project/{}", slug);
