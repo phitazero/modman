@@ -3,7 +3,7 @@ use std::process::exit;
 
 #[derive(Debug)]
 pub struct ParsedArgs {
-	pub operation: char,
+	pub operation: Option<char>,
 	pub options: Vec<char>,
 	pub args: Vec<String>,
 }
@@ -82,19 +82,8 @@ pub fn parse() -> ParsedArgs {
 		}
 	}
 
-	// -h is also an operation, but less prioritized
-	if operation_opt.is_none() && options.contains(&'h') {
-		operation_opt = Some('h');
-	}
-
-	// 1 operation must be present
-	if operation_opt.is_none() {
-		eprintln!("error: no operation specified");
-		exit(1);
-	}
-
 	ParsedArgs {
-		operation: operation_opt.unwrap(),
+		operation: operation_opt,
 		options: options,
 		args: args,
 	}
