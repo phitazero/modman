@@ -53,6 +53,67 @@ fn command_info(parsed_args: &mut ParsedArgs) {
 	}
 }
 
+fn command_search(parsed_args: &mut ParsedArgs) {
+	let args = &parsed_args.args;
+
+	if args.len() == 0 {
+		eprintln!("error: no target specified");
+		exit(1);
+	}
+
+	if args.len() > 1 {
+		eprintln!("error: too many arguments");
+		exit(1);
+	}
+
+	let slug = &args[0];
+
+	let modpack: Option<Modpack> = None;
+	// let modpack: Option<Modpack> = Some(Modpack{loader: "quilt".to_string(), version:"1.21.4".to_string()});
+	let limit: u8 = /*get from config*/ 10;
+
+	search_by_slug(slug, modpack, limit);
+}
+
+fn search_by_slug(slug: &String, modpack: Option<Modpack>, limit: u8) -> Result<u8, String> {
+	let url = format!("https://api.modrinth.com/v2/search");
+
+	let mut params: Vec<(&str, &str)> = Vec::new();
+	params.push(("query", slug.as_str()));
+
+	let facets_str = construct_facets(&modpack);
+	params.push(("facets", facets_str.as_str()));
+
+	let limit_str = limit.to_string();
+	params.push(("limit", limit_str.as_str()));
+
+	println!("{:?}", params);
+
+	let data = requests::sync_get(&url, params)?;
+
+	let hits = data["hits"].as_array().unwrap();
+
+	// TODO: print each mod
+
+	Ok(hits.len() as u8)
+}
+
+fn construct_facets(modpack: &Option<Modpack>) -> String {
+	let mut facets: Vec<String> = Vec::new();
+	facets.push("[\"project_type:mod\"]".to_string());
+	
+	match modpack {
+		None => (),
+		Some(modpack) => {
+			facets.push(format!("[\"categories:{}\"]", modpack.loader));
+			facets.push(format!("[\"versions:{}\"]", modpack.version));
+		}
+	}
+
+	format!("[{}]", facets.join(","))
+}
+
+
 fn print_info(slug: &String) -> Result<(), String> {
 	println!("\n");
 
