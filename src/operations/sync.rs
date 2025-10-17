@@ -4,6 +4,9 @@ use std::process::exit;
 
 const PRINT_VERSION_CHUNKS: usize = 5;
 
+// dummy, will be implement propertly in the future
+struct Modpack { loader: String, version: String }
+
 pub fn dispatch(mut parsed_args: ParsedArgs) {
 	if parsed_args.exhaust_option('h') {
 		print_help();
@@ -11,6 +14,10 @@ pub fn dispatch(mut parsed_args: ParsedArgs) {
 
 	if parsed_args.exhaust_option('i') {
 		command_info(&mut parsed_args);
+	}
+
+	if parsed_args.exhaust_option('s') {
+		command_search(&mut parsed_args);
 	}
 }
 
