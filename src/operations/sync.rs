@@ -10,11 +10,13 @@ pub fn dispatch(mut parsed_args: ParsedArgs) {
 	}
 
 	if parsed_args.exhaust_option('i') {
-		command_info(parsed_args.args);
+		command_info(&mut parsed_args);
 	}
 }
 
-fn command_info(args: Vec<String>) {
+fn command_info(parsed_args: &mut ParsedArgs) {
+	let args = &parsed_args.args;
+
 	if args.len() == 0 {
 		eprintln!("error: no target specified");
 		exit(1);
@@ -22,7 +24,7 @@ fn command_info(args: Vec<String>) {
 
 	let mut n_successful = 0;
 
-	for arg in &args {
+	for arg in args {
 		let result = print_info(&arg);
 
 		match result {
@@ -33,6 +35,10 @@ fn command_info(args: Vec<String>) {
 				println!("Skipped \'{}\'\n", arg)
 			},
 		}
+	}
+
+	if n_successful < args.len() {
+		eprintln!("Skipped {} mod(s)", args.len() - n_successful);
 	}
 
 	if n_successful == 0 {
