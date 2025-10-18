@@ -164,11 +164,15 @@ fn print_info(slug: &String) -> Result<(), String> {
 	// if an .unwrap() panics - idk, not my fault
 
 	let title = &data["title"];
-	if !title.is_null() {
-		print!("{} ", title.as_str().unwrap());
-	}
+	print!(
+		"[ {}",
+		match title {
+			serde_json::Value::String(title) => format!("{} ", title),
+			_ => String::new(),
+		}
+	);
 
-	println!("({slug})\n");
+	println!("({slug}) ]\n");
 
 	let desc = &data["description"];
 	if !desc.is_null() {
