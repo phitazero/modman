@@ -72,10 +72,21 @@ fn command_search(parsed_args: &mut ParsedArgs) {
 	// let modpack: Option<Modpack> = Some(Modpack{loader: "quilt".to_string(), version:"1.21.4".to_string()});
 	let limit: u8 = /*get from config*/ 10;
 
-	search_by_slug(slug, modpack, limit);
+	let result = search_by_slug(slug, modpack, limit);
+
+	match result {
+		Ok((n_hits, n_total_hits)) => {
+			println!("Showing {} mods out of {} total", n_hits, n_total_hits);
+			println!("Top finds are placed the lowest");
+		},
+		Err(err_msg) => {
+			eprintln!("error: search failed");
+			eprintln!("{}", err_msg);
+		}
+	}
 }
 
-fn search_by_slug(slug: &String, modpack: Option<Modpack>, limit: u8) -> Result<u8, String> {
+fn search_by_slug(slug: &String, modpack: Option<Modpack>, limit: u8) -> Result<(u8, u8), String> {
 	let url = format!("https://api.modrinth.com/v2/search");
 
 	let mut params: Vec<(&str, &str)> = Vec::new();
@@ -91,11 +102,40 @@ fn search_by_slug(slug: &String, modpack: Option<Modpack>, limit: u8) -> Result<
 
 	let data = requests::sync_get(&url, params)?;
 
-	let hits = data["hits"].as_array().unwrap();
+	let mut hits = data["hits"].as_array().unwrap().clone();
 
-	// TODO: print each mod
+	// top finds are printed the lowest, so that i don't need to scroll up to see them
+	hits.reverse();
 
-	Ok(hits.len() as u8)
+	for hit in &hits {
+		print!(
+			"[ {}",
+			match hit["title"].clone() {
+				serde_json::Value::String(title) => title,
+				_ => "<No title>".to_string(),
+			}
+		);
+
+		println!(
+			" ({}) ]",
+			match hit["slug"].clone() {
+				serde_json::Value::String(slug) => slug,
+				_ => "<No slug>".to_string(),
+			}
+		);
+
+		println!("{}\n\n",
+			match hit["description"].clone() {
+				serde_json::Value::String(desc) => desc,
+				_ => "<No desc>".to_string(),
+			}
+		);
+	}
+
+	let n_hits = hits.len() as u8;
+	let n_total_hits = data["total_hits"].as_i64().unwrap() as u8;
+
+	Ok((n_hits, n_total_hits))
 }
 
 fn construct_facets(modpack: &Option<Modpack>) -> String {
