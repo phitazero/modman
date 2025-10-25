@@ -8,7 +8,7 @@ const PRINT_VERSION_CHUNKS: usize = 5;
 struct Modpack { loader: String, version: String }
 
 pub fn dispatch(mut parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 'h', 's', 'i']);
+	parsed_args.check_validity(&['S', 'h', 's', 'i', 'a']);
 
 	for option in parsed_args.options.clone() {
 		match option {
@@ -55,7 +55,7 @@ fn command_info(parsed_args: &mut ParsedArgs) {
 }
 
 fn command_search(parsed_args: &mut ParsedArgs) {
-	parsed_args.check_validity(&['S', 's']);
+	parsed_args.check_validity(&['S', 's', 'a']);
 
 	let args = &parsed_args.args;
 
@@ -73,7 +73,10 @@ fn command_search(parsed_args: &mut ParsedArgs) {
 
 	let modpack: Option<Modpack> = None;
 	// let modpack: Option<Modpack> = Some(Modpack{loader: "quilt".to_string(), version:"1.21.4".to_string()});
-	let limit: u8 = /*get from config*/ 10;
+	let limit: u8 = match parsed_args.option('a') {
+		false => /*get from config*/ 5,
+		true => 100, // max allowed by the API
+	};
 
 	let result = search_by_slug(slug, modpack, limit);
 
