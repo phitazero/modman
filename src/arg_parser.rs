@@ -9,13 +9,16 @@ pub struct ParsedArgs {
 }
 
 impl ParsedArgs {
-	pub fn exhaust_option(&mut self, option: char) -> bool {
-		match self.options.iter().position(|f| *f == option) {
-			Some(index) => {
-				self.options.remove(index);
-				true
-			},
-			None => false
+	pub fn option(&self, option: char) -> bool {
+		self.options.contains(&option)
+	}
+
+	pub fn check_validity(&self, allowed_options: &[char]) {
+		for option in self.options.iter() {
+			if !allowed_options.contains(option) {
+				eprintln!("error: invalid option: \'{}\'", option);
+				exit(1);
+			}
 		}
 	}
 }

@@ -8,20 +8,21 @@ const PRINT_VERSION_CHUNKS: usize = 5;
 struct Modpack { loader: String, version: String }
 
 pub fn dispatch(mut parsed_args: ParsedArgs) {
-	if parsed_args.exhaust_option('h') {
-		print_help();
-	}
+	parsed_args.check_validity(&['S', 'h', 's', 'i']);
 
-	if parsed_args.exhaust_option('i') {
-		command_info(&mut parsed_args);
-	}
-
-	if parsed_args.exhaust_option('s') {
-		command_search(&mut parsed_args);
+	for option in parsed_args.options.clone() {
+		match option {
+			'i' => command_info(&mut parsed_args),
+			's' => command_search(&mut parsed_args),
+			'h' => print_help(),
+			_ => ()
+		}
 	}
 }
 
 fn command_info(parsed_args: &mut ParsedArgs) {
+	parsed_args.check_validity(&['S', 'i']);
+
 	let args = &parsed_args.args;
 
 	if args.len() == 0 {
@@ -54,6 +55,8 @@ fn command_info(parsed_args: &mut ParsedArgs) {
 }
 
 fn command_search(parsed_args: &mut ParsedArgs) {
+	parsed_args.check_validity(&['S', 's']);
+
 	let args = &parsed_args.args;
 
 	if args.len() == 0 {
