@@ -35,35 +35,29 @@ fn open_config() -> File {
 		}
 	}
 
-	let config_file = match config_path.exists() {
-		true => {
-			let config_file = match File::open(config_path) {
-				Ok(file) => file,
-				Err(_) => {
-					eprintln!("error: couldn't open config file");
-					exit(1);
-				}
-			};
-			config_file
-		},
-		false => {
-			let config_file = match File::create(&config_path) {
-				Ok(file) => file,
-				Err(_) => {
-					eprintln!("error: couldn't create config file");
-					exit(1);
-				}
-			};
-
-			let result = serde_json::to_writer_pretty(&config_file, &DEFAULT_CONFIG);
-
-			if result.is_err() {
-				eprintln!("error: failed to write default config");
+	if !config_path.exists() {
+		let config_file = match File::create(&config_path) {
+			Ok(file) => file,
+			Err(_) => {
+				eprintln!("error: couldn't create config file");
 				exit(1);
 			}
+		};
 
-			config_file
-		},
+		let result = serde_json::to_writer_pretty(&config_file, &DEFAULT_CONFIG);
+
+		if result.is_err() {
+			eprintln!("error: failed to write default config");
+			exit(1);
+		}
+	}
+
+	let config_file = match File::open(config_path) {
+		Ok(file) => file,
+		Err(_) => {
+			eprintln!("error: couldn't open config file");
+			exit(1);
+		}
 	};
 
 	config_file
