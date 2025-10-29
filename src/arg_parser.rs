@@ -23,7 +23,6 @@ impl ParsedArgs {
 	}
 }
 
-
 pub fn parse() -> ParsedArgs {
 	let mut argv = env::args();
 
@@ -89,5 +88,17 @@ pub fn parse() -> ParsedArgs {
 		operation: operation_opt,
 		options: options,
 		args: args,
+	}
+}
+
+pub trait OptionVec {
+	fn contains_none_of(&self, options: &[char]) -> bool;
+}
+
+impl OptionVec for Vec<char> {
+	fn contains_none_of(&self, options: &[char]) -> bool {
+		!options
+			.iter()
+			.any(|option| self.contains(option))
 	}
 }
