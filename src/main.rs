@@ -3,6 +3,8 @@ use std::process::exit;
 mod arg_parser;
 mod requests;
 mod operations;
+mod config;
+mod modpack;
 
 fn main() {
 	let parsed_args = arg_parser::parse();
