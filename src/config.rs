@@ -4,12 +4,14 @@ use std::process::exit;
 use std::fs::{self, File};
 
 const DEFAULT_CONFIG: Config = Config {
-	mods_search_limit: Some(5)
+	mods_search_limit: Some(5),
+	instances_path: None,
 };
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
 	mods_search_limit: Option<u8>,
+	instances_path: Option<String>,
 }
 
 pub fn config() -> Config {
