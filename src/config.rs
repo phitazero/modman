@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use directories::BaseDirs;
 use std::process::exit;
 use std::fs::{self, File};
+use std::path::PathBuf;
 
 const DEFAULT_CONFIG: Config = Config {
 	mods_search_limit: Some(5), // must always be a Some
@@ -22,9 +23,23 @@ impl Config {
 		}
 	}
 
-	pub fn get_instances_path(&self) -> String {
+	pub fn get_instances_path(&self) -> PathBuf {
 		match self.instances_path.clone() {
-			Some(value) => value,
+			Some(value) => {
+				let path = PathBuf::from(value);
+
+				if !path.exists() {
+					eprintln!("error: specified instances directory path doesn't exist: {}", path.display());
+					exit(1);
+				}
+
+				if !path.is_dir() {
+					eprintln!("error: specified instances directory path is not a directory: {}", path.display());
+					exit(1);
+				}
+
+				path
+			},
 			None => {
 				eprintln!("error: path to instances directory must be defined in config");
 				exit(1);
