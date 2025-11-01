@@ -12,6 +12,20 @@ pub struct Config {
 	mods_search_limit: Option<u8>,
 }
 
+pub fn config() -> Config {
+	let config_file = open_config();
+
+	match serde_json::from_reader::<File, Config>(config_file) {
+		Ok(config) => config,
+		Err(error) => {
+			eprint!("error: failed to parse config json: ");
+			eprint!("{:?} ", error.classify());
+			eprintln!("({}:{})", error.line(), error.column());
+			exit(1);
+		}
+	}
+}
+
 fn open_config() -> File {
 	let config_path = match BaseDirs::new() {
 		Some(base_dirs) => base_dirs.config_dir()

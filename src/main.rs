@@ -6,6 +6,8 @@ mod operations;
 mod config;
 mod modpack;
 
+use config::config;
+
 fn main() {
 	let parsed_args = arg_parser::parse();
 
