@@ -4,7 +4,7 @@ use std::process::exit;
 use std::fs::{self, File};
 
 const DEFAULT_CONFIG: Config = Config {
-	mods_search_limit: Some(5),
+	mods_search_limit: Some(5), // must always be a Some
 	instances_path: None,
 };
 
@@ -12,6 +12,25 @@ const DEFAULT_CONFIG: Config = Config {
 pub struct Config {
 	mods_search_limit: Option<u8>,
 	instances_path: Option<String>,
+}
+
+impl Config {
+	pub fn get_mods_search_limit(&self) -> u8 {
+		match self.mods_search_limit {
+			Some(value) => value,
+			None => DEFAULT_CONFIG.mods_search_limit.unwrap(),
+		}
+	}
+
+	pub fn get_instances_path(&self) -> String {
+		match self.instances_path.clone() {
+			Some(value) => value,
+			None => {
+				eprintln!("error: path to instances directory must be defined in config");
+				exit(1);
+			}
+		}
+	}
 }
 
 pub fn config() -> Config {
