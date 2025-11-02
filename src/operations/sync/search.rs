@@ -1,6 +1,7 @@
 use crate::requests;
 use crate::arg_parser::ParsedArgs;
 use crate::modpack::Modpack;
+use crate::config;
 use std::process::exit;
 
 pub fn command_search(parsed_args: &mut ParsedArgs) {
@@ -23,7 +24,7 @@ pub fn command_search(parsed_args: &mut ParsedArgs) {
 	let modpack: Option<Modpack> = None;
 	// let modpack: Option<Modpack> = Some(Modpack{loader: "quilt".to_string(), version:"1.21.4".to_string()});
 	let limit: u8 = match parsed_args.option('a') {
-		false => /*get from config*/ 5,
+		false => config().get_mods_search_limit(),
 		true => 100, // max allowed by the API
 	};
 
