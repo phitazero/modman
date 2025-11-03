@@ -44,57 +44,48 @@ fn print_info(slug: &String) -> Result<(), String> {
 	let url = format!("https://api.modrinth.com/v2/project/{}", slug);
 	let data = requests::sync_get(&url, Vec::new())?;
 
-	// from now on all responsibility for .unwrap()'s is moved onto the API
-	// if an .unwrap() panics - idk, not my fault
+	let title = match &data["title"] {
+		serde_json::Value::String(title) => title,
+		_ => &"<No title>".to_string(),
+	};
+	println!("[ {title} ({slug}) ]\n");
 
-	let title = &data["title"];
-	print!(
-		"[ {}",
-		match title {
-			serde_json::Value::String(title) => format!("{} ", title),
-			_ => String::new(),
-		}
-	);
+	let desc = match &data["description"] {
+		serde_json::Value::String(desc) => desc,
+		_ => &"<No description>".to_string(),
+	};
+	println!("{desc}\n");
 
-	println!("({slug}) ]\n");
+	match &data["game_versions"] {
+		serde_json::Value::Array(game_versions) => {
+			let (chunks, remainder) = game_versions.as_chunks::<PRINT_VERSION_CHUNKS>();
 
-	let desc = &data["description"];
-	if !desc.is_null() {
-		println!("{}\n", desc.as_str().unwrap());
-	}
+			println!("Supported game versions:");
 
-	let game_versions = &data["game_versions"];
-	if !game_versions.is_null() {
-		let game_versions = game_versions.as_array().unwrap();
-
-		let (chunks, remainder) = game_versions.as_chunks::<PRINT_VERSION_CHUNKS>();
-
-		println!("Supported game versions:");
-
-		for chunk in chunks {
-			for version in chunk {
+			for chunk in chunks {
+				for version in chunk {
+					print!("{}  ", version.as_str().unwrap());
+				}
+				println!();
+			}
+			for version in remainder {
 				print!("{}  ", version.as_str().unwrap());
 			}
-			println!();
-		}
-		for version in remainder {
-			print!("{}  ", version.as_str().unwrap());
-		}
-		println!("\n");
-		
+			println!("\n");
+		},
+		_ => println!("<Game versions not specified>\n"),
 	}
 
-	let loaders = &data["loaders"];
-	if !loaders.is_null() {
-		let loaders = loaders.as_array().unwrap();
+	match &data["loaders"] {
+		serde_json::Value::Array(loaders) => {
+			println!("Supported mod loaders:");
 
-		println!("Supported mod loaders:");
-
-		for loader in loaders {
-			print!("{}  ", loader.as_str().unwrap());
-		}
-		println!("\n");
-		
+			for loader in loaders {
+				print!("{}  ", loader.as_str().unwrap());
+			}
+			println!("\n");
+		},
+		_ => println!("<Supported mod loaders not specified>\n"),
 	}
 
 	Ok(())
