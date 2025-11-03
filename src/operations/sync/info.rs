@@ -88,5 +88,18 @@ fn print_info(slug: &String) -> Result<(), String> {
 		_ => println!("<Supported mod loaders not specified>\n"),
 	}
 
+	let client_side = match &data["client_side"] {
+		serde_json::Value::String(client_side) => client_side,
+		_ => &"<Not specified>".to_string(),
+	};
+
+	let server_side = match &data["server_side"] {
+		serde_json::Value::String(server_side) => server_side,
+		_ => &"<Not specified>".to_string(),
+	};
+
+	println!("Client side: {client_side}");
+	println!("Server side: {server_side}");
+
 	Ok(())
 }
