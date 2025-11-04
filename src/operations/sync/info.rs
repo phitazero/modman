@@ -1,4 +1,5 @@
 use crate::requests;
+use crate::RemoteMod;
 use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
@@ -41,65 +42,27 @@ pub fn command_info(parsed_args: &mut ParsedArgs) {
 fn print_info(slug: &String) -> Result<(), String> {
 	println!("\n");
 
-	let url = format!("https://api.modrinth.com/v2/project/{}", slug);
-	let data: serde_json::Value = requests::sync_get(&url, Vec::new())?;
+	let remote_mod = RemoteMod::fetch(slug)?;
 
-	let title = match &data["title"] {
-		serde_json::Value::String(title) => title,
-		_ => &"<No title>".to_string(),
-	};
+	let title = remote_mod.get_title();
 	println!("[ {title} ({slug}) ]\n");
 
-	let desc = match &data["description"] {
-		serde_json::Value::String(desc) => desc,
-		_ => &"<No description>".to_string(),
-	};
-	println!("{desc}\n");
+	println!("{}\n", remote_mod.get_description());
 
-	match &data["game_versions"] {
-		serde_json::Value::Array(game_versions) => {
-			let (chunks, remainder) = game_versions.as_chunks::<PRINT_VERSION_CHUNKS>();
-
-			println!("Supported game versions:");
-
-			for chunk in chunks {
-				for version in chunk {
-					print!("{}  ", version.as_str().unwrap());
-				}
-				println!();
-			}
-			for version in remainder {
-				print!("{}  ", version.as_str().unwrap());
-			}
-			println!("\n");
-		},
-		_ => println!("<Game versions not specified>\n"),
+	match remote_mod.format_game_versions::<PRINT_VERSION_CHUNKS>() {
+		Some(formatted) => println!("Supported game versions:\n{formatted}"),
+		None => println!("<Game versions not specified>"),
 	}
 
-	match &data["loaders"] {
-		serde_json::Value::Array(loaders) => {
-			println!("Supported mod loaders:");
-
-			for loader in loaders {
-				print!("{}  ", loader.as_str().unwrap());
-			}
-			println!("\n");
-		},
-		_ => println!("<Supported mod loaders not specified>\n"),
+	match remote_mod.format_loaders() {
+		Some(formatted) => println!("Supported mod loaders:\n{formatted}"),
+		None => println!("<Supported mod loaders not specified>"),
 	}
 
-	let client_side = match &data["client_side"] {
-		serde_json::Value::String(client_side) => client_side,
-		_ => &"<Not specified>".to_string(),
-	};
+	print!("\n");
 
-	let server_side = match &data["server_side"] {
-		serde_json::Value::String(server_side) => server_side,
-		_ => &"<Not specified>".to_string(),
-	};
-
-	println!("Client side: {client_side}");
-	println!("Server side: {server_side}");
+	println!("Client side: {}", remote_mod.get_client_side());
+	println!("Server side: {}", remote_mod.get_server_side());
 
 	Ok(())
 }
