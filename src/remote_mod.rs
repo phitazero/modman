@@ -60,8 +60,9 @@ impl RemoteMod {
 				}
 				for version in remainder {
 					formatted.push_str(version);
-					formatted.push_str("  \n");
+					formatted.push_str("  ");
 				}
+				formatted.push('\n');
 
 				formatted
 			})
