@@ -22,11 +22,7 @@ pub fn command_info(parsed_args: &mut ParsedArgs) {
 
 		match result {
 			Ok(()) => { n_successful += 1; },
-			Err(err_msg) => {
-				eprintln!("error: failed to fetch info about \'{}\'", arg);
-				eprintln!("{}", err_msg);
-				println!("Skipped \'{}\'\n", arg)
-			},
+			Err(err_msg) => println!("Skipped \'{}\'\n", arg),
 		}
 	}
 

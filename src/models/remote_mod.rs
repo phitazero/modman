@@ -15,8 +15,11 @@ pub struct RemoteMod {
 impl RemoteMod {
 	pub fn fetch(slug: &String) -> Result<RemoteMod, String> {
 		let url = format!("https://api.modrinth.com/v2/project/{}", slug);
-		let remote_mod: RemoteMod = requests::sync_get(&url, Vec::new())?;
-		Ok(remote_mod)
+		requests::sync_get(&url, Vec::new())
+			.inspect_err(|err_msg| {
+				eprintln!("error: failed to fetch info about \'{}\'", slug);
+				eprintln!("{}", err_msg);
+			})
 	}
 
 	pub fn get_title(&self) -> String {
