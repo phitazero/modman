@@ -4,11 +4,11 @@ mod arg_parser;
 mod requests;
 mod operations;
 mod config;
-mod modpack;
-mod remote_mod;
+mod models;
 
 use config::config;
-use remote_mod::RemoteMod;
+use models::remote_mod::RemoteMod;
+use models::modpack;
 
 fn main() {
 	let parsed_args = arg_parser::parse();
