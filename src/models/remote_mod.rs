@@ -91,7 +91,7 @@ pub struct BatchFetch {
 }
 
 impl Iterator for BatchFetch {
-	type Item = Result<RemoteMod, String>;
+	type Item = (String, Result<RemoteMod, String>);
 
 	fn next(&mut self) -> Option<Self::Item> {
 		match self.slugs_iter.next() {
@@ -102,7 +102,7 @@ impl Iterator for BatchFetch {
 					self.n_failed += 1;
 				}
 
-				Some(remote_mod)
+				Some((slug, remote_mod))
 			},
 			// after iterating over all mods
 			None => {
