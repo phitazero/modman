@@ -5,8 +5,10 @@ mod requests;
 mod operations;
 mod config;
 mod modpack;
+mod remote_mod;
 
 use config::config;
+use remote_mod::RemoteMod;
 
 fn main() {
 	let parsed_args = arg_parser::parse();
