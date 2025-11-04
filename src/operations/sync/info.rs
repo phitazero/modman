@@ -1,4 +1,3 @@
-use crate::requests;
 use crate::RemoteMod;
 use crate::arg_parser::ParsedArgs;
 use std::process::exit;
@@ -15,33 +14,19 @@ pub fn command_info(parsed_args: &mut ParsedArgs) {
 		exit(1);
 	}
 
-	let mut n_successful = 0;
-
-	for arg in args {
-		let result = print_info(&arg);
-
-		match result {
-			Ok(()) => { n_successful += 1; },
-			Err(err_msg) => println!("Skipped \'{}\'\n", arg),
+	for (slug, remote_mod_res) in RemoteMod::batch_fetch(args) {
+		match remote_mod_res {
+			Ok(remote_mod) => print_info(remote_mod),
+			Err(_) => println!("Skipping \'{slug}\'\n"),
 		}
-	}
-
-	if n_successful < args.len() {
-		eprintln!("Skipped {} mod(s)", args.len() - n_successful);
-	}
-
-	if n_successful == 0 {
-		eprintln!("All requests failed!");
 	}
 }
 
-fn print_info(slug: &String) -> Result<(), String> {
+fn print_info(remote_mod: RemoteMod) {
 	println!("\n");
 
-	let remote_mod = RemoteMod::fetch(slug)?;
-
 	let title = remote_mod.get_title();
-	println!("[ {title} ({slug}) ]\n");
+	println!("[ {title} ({}) ]\n", remote_mod.slug);
 
 	println!("{}\n", remote_mod.get_description());
 
@@ -59,6 +44,4 @@ fn print_info(slug: &String) -> Result<(), String> {
 
 	println!("Client side: {}", remote_mod.get_client_side());
 	println!("Server side: {}", remote_mod.get_server_side());
-
-	Ok(())
 }
