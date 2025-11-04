@@ -1,5 +1,6 @@
 use reqwest::header::{self, HeaderMap, HeaderValue};
 use serde_urlencoded;
+use serde::de::DeserializeOwned;
 
 const USER_AGENT: &str = "phitazero/modman";
 
@@ -8,7 +9,8 @@ fn serialize_params(params: &Vec<(&str, &str)>) -> Result<String, String> {
 		.map_err(|_| format!("failed to serialize parameters: {:?}", params))
 }
 
-pub fn sync_get(url: &str, params: Vec<(&str, &str)>) -> Result<serde_json::Value, String> {
+pub fn sync_get<T>(url: &str, params: Vec<(&str, &str)>) -> Result<T, String>
+where T: DeserializeOwned {
 	let client = reqwest::blocking::Client::new();
 
 	let mut headers = HeaderMap::new();

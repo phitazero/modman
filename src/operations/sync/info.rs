@@ -42,7 +42,7 @@ fn print_info(slug: &String) -> Result<(), String> {
 	println!("\n");
 
 	let url = format!("https://api.modrinth.com/v2/project/{}", slug);
-	let data = requests::sync_get(&url, Vec::new())?;
+	let data: serde_json::Value = requests::sync_get(&url, Vec::new())?;
 
 	let title = match &data["title"] {
 		serde_json::Value::String(title) => title,

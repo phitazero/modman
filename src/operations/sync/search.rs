@@ -54,7 +54,7 @@ fn search_by_slug(slug: &String, modpack: Option<Modpack>, limit: u8) -> Result<
 	let limit_str = limit.to_string();
 	params.push(("limit", limit_str.as_str()));
 
-	let data = requests::sync_get(&url, params)?;
+	let data: serde_json::Value = requests::sync_get(&url, params)?;
 
 	let mut hits = data["hits"].as_array().unwrap().clone();
 
