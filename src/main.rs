@@ -15,6 +15,7 @@ fn main() {
 
 	match parsed_args.operation {
 		Some('S') => operations::sync::dispatch(parsed_args),
+		Some('M') => operations::modpack::dispatch(parsed_args),
 		Some(other) => {
 			eprintln!("error: invalid operation \'{}\'", other);
 			exit(1);
