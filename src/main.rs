@@ -5,6 +5,7 @@ mod requests;
 mod operations;
 mod config;
 mod models;
+mod utils;
 
 use config::config;
 use models::remote_mod::RemoteMod;

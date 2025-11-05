@@ -3,6 +3,7 @@ use directories::BaseDirs;
 use std::process::exit;
 use std::fs::{self, File};
 use std::path::PathBuf;
+use crate::utils;
 
 const DEFAULT_CONFIG: Config = Config {
 	mods_search_limit: Some(5), // must always be a Some
@@ -28,15 +29,7 @@ impl Config {
 			Some(value) => {
 				let path = PathBuf::from(value);
 
-				if !path.exists() {
-					eprintln!("error: specified instances directory path doesn't exist: {}", path.display());
-					exit(1);
-				}
-
-				if !path.is_dir() {
-					eprintln!("error: specified instances directory path is not a directory: {}", path.display());
-					exit(1);
-				}
+				utils::assert_directory(&path);
 
 				path
 			},
