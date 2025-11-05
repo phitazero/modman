@@ -4,7 +4,7 @@ use crate::Modpack;
 use crate::config;
 use std::process::exit;
 
-pub fn command_search(parsed_args: &mut ParsedArgs) {
+pub fn command_search(parsed_args: ParsedArgs) {
 	parsed_args.check_validity(&['S', 's', 'a']);
 
 	let args = &parsed_args.args;

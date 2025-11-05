@@ -4,7 +4,7 @@ use std::process::exit;
 
 const PRINT_VERSION_CHUNKS: usize = 5;
 
-pub fn command_info(parsed_args: &mut ParsedArgs) {
+pub fn command_info(parsed_args: ParsedArgs) {
 	parsed_args.check_validity(&['S', 'i']);
 
 	let args = &parsed_args.args;
