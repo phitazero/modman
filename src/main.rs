@@ -8,7 +8,7 @@ mod models;
 
 use config::config;
 use models::remote_mod::RemoteMod;
-use models::modpack;
+use models::modpack::Modpack;
 
 fn main() {
 	let parsed_args = arg_parser::parse();

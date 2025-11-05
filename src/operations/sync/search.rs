@@ -1,6 +1,6 @@
 use crate::requests;
 use crate::arg_parser::ParsedArgs;
-use crate::modpack::Modpack;
+use crate::Modpack;
 use crate::config;
 use std::process::exit;
 
