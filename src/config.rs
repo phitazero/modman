@@ -7,13 +7,14 @@ use crate::utils;
 
 const DEFAULT_CONFIG: Config = Config {
 	mods_search_limit: Some(5), // must always be a Some
-	instances_path: None,
+	dot_minecraft_path: None,
 };
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
 	mods_search_limit: Option<u8>,
-	instances_path: Option<String>,
+	#[serde(rename = ".minecraft_path")]
+	dot_minecraft_path: Option<String>,
 }
 
 impl Config {
@@ -24,8 +25,8 @@ impl Config {
 		}
 	}
 
-	pub fn get_instances_path(&self) -> PathBuf {
-		match self.instances_path.clone() {
+	pub fn get_dot_minecraft_path(&self) -> PathBuf {
+		match self.dot_minecraft_path.clone() {
 			Some(value) => {
 				let path = PathBuf::from(value);
 
@@ -34,7 +35,7 @@ impl Config {
 				path
 			},
 			None => {
-				eprintln!("error: path to instances directory must be defined in config");
+				eprintln!("error: path to .minecraft directory must be defined in config");
 				exit(1);
 			}
 		}
