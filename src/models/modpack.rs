@@ -9,8 +9,6 @@ const MANIFEST_FILENAME: &str = "modman-modpack.json";
 
 #[derive(Serialize, Deserialize)]
 pub struct Modpack {
-	#[serde(skip)]
-	pub name: String,
 	pub loader: String,
 	pub version: String,
 	pub mods: Vec<LocalMod>,
@@ -18,8 +16,7 @@ pub struct Modpack {
 
 impl Modpack {
 	pub fn save(&self) {
-		let path = config().get_instances_path()
-			.join(&self.name)
+		let path = utils::current_dir()
 			.join(MANIFEST_FILENAME);
 
 		match File::create(path) {
