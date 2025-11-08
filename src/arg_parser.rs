@@ -90,15 +90,3 @@ pub fn parse() -> ParsedArgs {
 		args: args,
 	}
 }
-
-pub trait OptionVec {
-	fn contains_none_of(&self, options: &[char]) -> bool;
-}
-
-impl OptionVec for Vec<char> {
-	fn contains_none_of(&self, options: &[char]) -> bool {
-		!options
-			.iter()
-			.any(|option| self.contains(option))
-	}
-}
