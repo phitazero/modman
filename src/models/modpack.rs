@@ -2,8 +2,7 @@ use serde::{Serialize, Deserialize};
 use std::fs::File;
 use std::process::exit;
 use crate::utils;
-
-const MANIFEST_FILENAME: &str = "modman-modpack.json";
+use crate::MANIFEST_FILENAME;
 
 #[derive(Serialize, Deserialize)]
 pub struct Modpack {

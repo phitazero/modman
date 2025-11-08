@@ -11,6 +11,8 @@ use config::config;
 use models::remote_mod::RemoteMod;
 use models::modpack::Modpack;
 
+const MANIFEST_FILENAME: &str = "modman-modpack.json";
+
 fn main() {
 	let parsed_args = arg_parser::parse();
 
