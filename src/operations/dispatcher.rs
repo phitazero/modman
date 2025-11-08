@@ -1,6 +1,6 @@
 use crate::arg_parser::ParsedArgs;
 
-fn dispatch(
+pub fn dispatch(
 	parsed_args: ParsedArgs,
 	optionless_handler: fn(ParsedArgs),
 	optioned_handlers: &[(char, fn(ParsedArgs))]
