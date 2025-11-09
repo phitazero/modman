@@ -31,6 +31,39 @@ impl Modpack {
 			}
 		}
 	}
+
+	pub fn current() -> Option<Modpack> {
+		let path = utils::current_dir()
+			.join(MANIFEST_FILENAME);
+
+		match File::open(path) {
+			Ok(file) => {
+				match serde_json::from_reader::<File, Modpack>(file) {
+					Ok(modpack) => Some(modpack),
+					Err(_) => {
+						// not clarifying the error here because the manifest is not to edit manually
+						eprintln!("error: couldn't read manifest JSON");
+						exit(1);
+					}
+				}
+			},
+			Err(err) => {
+				if err.kind() == std::io::ErrorKind::NotFound {
+					None
+				} else {
+					eprintln!("error: failed to open modpack manifest");
+					exit(1);
+				}
+			}
+		}
+	}
+
+	pub fn require_current() -> Modpack {
+		Modpack::current().unwrap_or_else(|| {
+			eprintln!("error: modpack required");
+			exit(1);
+		})
+	}
 }
 
 // dummy, will be implemented properly in the future
