@@ -13,7 +13,7 @@ pub struct RemoteMod {
 }
 
 impl RemoteMod {
-	pub fn fetch(slug: &String) -> Result<RemoteMod, String> {
+	pub fn fetch(slug: &str) -> Result<RemoteMod, String> {
 		let url = format!("https://api.modrinth.com/v2/project/{}", slug);
 		requests::sync_get(&url, Vec::new())
 			.inspect_err(|err_msg| {

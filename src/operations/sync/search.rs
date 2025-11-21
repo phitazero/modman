@@ -42,11 +42,11 @@ pub fn command_search(parsed_args: ParsedArgs) {
 	}
 }
 
-fn search_by_slug(slug: &String, modpack: Option<Modpack>, limit: u8) -> Result<(u8, u8), String> {
+fn search_by_slug(slug: &str, modpack: Option<Modpack>, limit: u8) -> Result<(u8, u8), String> {
 	let url = format!("https://api.modrinth.com/v2/search");
 
 	let mut params: Vec<(&str, &str)> = Vec::new();
-	params.push(("query", slug.as_str()));
+	params.push(("query", slug));
 
 	let facets_str = construct_facets(&modpack);
 	params.push(("facets", facets_str.as_str()));

@@ -20,7 +20,7 @@ impl Deref for VersionList {
 }
 
 impl VersionList {
-	pub fn fetch(slug: &String, modpack: &Modpack) -> VersionList {
+	pub fn fetch(slug: &str, modpack: &Modpack) -> VersionList {
 		let url = format!("https://api.modrinth.com/v2/project/{}/version", slug);
 
 		let mut params: Vec<(&str, &str)> = Vec::new();
