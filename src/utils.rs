@@ -23,3 +23,10 @@ pub fn current_dir() -> PathBuf {
 		}
 	}
 }
+
+pub fn format_json_error(error: serde_json::Error) -> String {
+	format!("{:?} ({}:{})",
+		error.classify(),
+		error.line(), error.column(),
+	)
+}

@@ -49,8 +49,7 @@ pub fn config() -> Config {
 		Ok(config) => config,
 		Err(error) => {
 			eprint!("error: failed to parse config json: ");
-			eprint!("{:?} ", error.classify());
-			eprintln!("({}:{})", error.line(), error.column());
+			eprintln!("{}", utils::format_json_error(error));
 			exit(1);
 		}
 	}

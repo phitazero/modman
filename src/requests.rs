@@ -1,3 +1,4 @@
+use crate::utils;
 use reqwest::header::{self, HeaderMap, HeaderValue};
 use serde_urlencoded;
 use serde::de::DeserializeOwned;
@@ -38,5 +39,7 @@ where T: DeserializeOwned {
 		.map_err(|_| "failed to get response text".to_string())?;
 
 	serde_json::from_str(&text)
-		.map_err(|_| "failed to parse JSON".to_string())
+		.map_err(|err|
+			format!("failed to parse JSON\n{}", utils::format_json_error(err))
+		)
 }
