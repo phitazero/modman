@@ -10,6 +10,7 @@ mod utils;
 use config::config;
 use models::remote_mod::RemoteMod;
 use models::modpack::Modpack;
+use models::version_list::VersionList;
 
 const MANIFEST_FILENAME: &str = "modman-modpack.json";
 
