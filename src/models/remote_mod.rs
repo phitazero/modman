@@ -6,8 +6,8 @@ pub struct RemoteMod {
 	pub slug: String,
 	title: Option<String>,
 	description: Option<String>,
-	game_versions: Option<Vec<String>>,
-	loaders: Option<Vec<String>>,
+	pub game_versions: Option<Vec<String>>,
+	pub loaders: Option<Vec<String>>,
 	client_side: Option<String>,
 	server_side: Option<String>,
 }
