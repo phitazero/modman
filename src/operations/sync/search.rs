@@ -5,7 +5,7 @@ use crate::config;
 use std::process::exit;
 
 pub fn command_search(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 's', 'a']);
+	parsed_args.check_validity(&['S', 's', 'a', 'd']);
 
 	let args = &parsed_args.args;
 
@@ -21,18 +21,29 @@ pub fn command_search(parsed_args: ParsedArgs) {
 
 	let slug = &args[0];
 
-	let modpack: Option<Modpack> = None;
-	// let modpack: Option<Modpack> = Some(Modpack{loader: "quilt".to_string(), version:"1.21.4".to_string()});
+	let modpack = match parsed_args.option('d') {
+		false => Modpack::current(),
+		true => None,
+	};
+
 	let limit: u8 = match parsed_args.option('a') {
 		false => config().get_mods_search_limit(),
 		true => 100, // max allowed by the API
 	};
 
-	let result = search_by_slug(slug, modpack, limit);
+	let result = search_by_slug(slug, modpack.as_ref(), limit);
 
 	match result {
 		Ok((n_hits, n_total_hits)) => {
 			println!("Showing {} mods out of {} total", n_hits, n_total_hits);
+
+			if let Some(modpack) = modpack {
+				println!("Current modpack parameters considered: {} {}",
+					modpack.loader,
+					modpack.version,
+				);
+			}
+
 			println!("Top finds are placed the lowest");
 		},
 		Err(err_msg) => {
@@ -42,13 +53,13 @@ pub fn command_search(parsed_args: ParsedArgs) {
 	}
 }
 
-fn search_by_slug(slug: &str, modpack: Option<Modpack>, limit: u8) -> Result<(u8, u8), String> {
+fn search_by_slug(slug: &str, modpack: Option<&Modpack>, limit: u8) -> Result<(u8, u8), String> {
 	let url = format!("https://api.modrinth.com/v2/search");
 
 	let mut params: Vec<(&str, &str)> = Vec::new();
 	params.push(("query", slug));
 
-	let facets_str = construct_facets(&modpack);
+	let facets_str = construct_facets(modpack);
 	params.push(("facets", facets_str.as_str()));
 
 	let limit_str = limit.to_string();
@@ -92,7 +103,7 @@ fn search_by_slug(slug: &str, modpack: Option<Modpack>, limit: u8) -> Result<(u8
 	Ok((n_hits, n_total_hits))
 }
 
-fn construct_facets(modpack: &Option<Modpack>) -> String {
+fn construct_facets(modpack: Option<&Modpack>) -> String {
 	let mut facets: Vec<String> = Vec::new();
 	facets.push("[\"project_type:mod\"]".to_string());
 	
