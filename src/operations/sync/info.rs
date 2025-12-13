@@ -1,4 +1,4 @@
-use crate::{RemoteMod, Modpack};
+use crate::{RemoteMod, Modpack, VersionList};
 use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
@@ -66,7 +66,13 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 			},
 		};
 
-		if does_version_match && does_loader_match {
+		let any_versions_available = if does_version_match && does_loader_match {
+			!VersionList::fetch(&remote_mod.slug, modpack).is_empty()
+		} else {
+			false
+		};
+
+		if does_version_match && does_loader_match && any_versions_available {
 			println!("[+] This mod is supported");
 			return;
 		}
@@ -77,6 +83,10 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 
 		if !does_version_match {
 			println!("[-] This mod doesn't support this modpack's game version");
+		}
+
+		if !any_versions_available {
+			println!("[-] There are no versions of this mod available for this modpack's loader and game version");
 		}
 	}
 }
