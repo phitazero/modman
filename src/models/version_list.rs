@@ -1,12 +1,8 @@
-use crate::Modpack;
+use crate::{Modpack, Version};
 use crate::requests;
 use serde::Deserialize;
 use std::ops::Deref;
 use std::process::exit;
-
-// dummy
-#[derive(Deserialize)]
-pub struct Version {}
 
 #[derive(Deserialize)]
 pub struct VersionList(Vec<Version>);
