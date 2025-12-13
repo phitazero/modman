@@ -67,16 +67,16 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 		};
 
 		if does_version_match && does_loader_match {
-			println!("This mod DOES fit this modpack");
+			println!("[+] This mod is supported");
 			return;
 		}
 
 		if !does_loader_match {
-			println!("This mod DOESN'T support this modpack's loader");
+			println!("[-] This mod doesn't support this modpack's loader");
 		}
 
 		if !does_version_match {
-			println!("This mod DOESN'T support this modpack's version");
+			println!("[-] This mod doesn't support this modpack's game version");
 		}
 	}
 }
