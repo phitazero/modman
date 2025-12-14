@@ -48,47 +48,81 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 	println!("Server side: {}", remote_mod.get_server_side());
 
 	if let Some(modpack) = modpack {
-		print!("\n");
+		println!("\nChecking compatibility with current modpack");
 
-		let does_version_match = match remote_mod.game_versions {
-			Some(versions) => versions.contains(&modpack.version),
-			None => {
-				eprintln!("warning: supported mod versions not specified");
-				true
-			},
+		let game_version_criterion = match remote_mod.game_versions {
+			Some(versions) => Criterion::from(versions.contains(&modpack.version)),
+			None => Criterion::Unknown,
 		};
 
-		let does_loader_match = match remote_mod.loaders {
-			Some(loaders) => loaders.contains(&modpack.loader),
-			None => {
-				eprintln!("warning: supported mod loaders not specified");
-				true
-			},
+		let loader_criterion = match remote_mod.loaders {
+			Some(loaders) => Criterion::from(loaders.contains(&modpack.loader)),
+			None => Criterion::Unknown,
 		};
 
-		let any_versions_available = if does_version_match && does_loader_match {
-			!VersionList::fetch(&remote_mod.slug, modpack)
-			.expect("couldn't fetch versions") // gonna handle the result properly, i swear
-			.is_empty()
-		} else {
-			false
-		};
+		let versions_available_criterion =
+			if game_version_criterion.is_passing() && loader_criterion.is_passing() {
+				match VersionList::fetch(&remote_mod.slug, modpack) {
+					Ok(version_list) => Criterion::from(!version_list.is_empty()),
+					Err(_) => Criterion::Unknown,
+				}
+			} else {
+				Criterion::NotSupported
+			};
 
-		if does_version_match && does_loader_match && any_versions_available {
-			println!("[+] This mod is supported");
-			return;
+		let verdict = 
+			game_version_criterion
+			.and(loader_criterion)
+			.and(versions_available_criterion);
+
+		println!("Game version supported:  [{}]", game_version_criterion.as_symbol());
+		println!("Loader supported:        [{}]", loader_criterion.as_symbol());
+		println!("Any versions found:      [{}]", versions_available_criterion.as_symbol());
+		println!("IS THIS MOD COMPATIBLE:  [{}]", verdict.as_symbol());
+	}
+}
+
+#[derive(Clone, Copy)]
+enum Criterion {
+	NotSupported,
+	Unknown,
+	Supported,
+}
+
+impl Criterion {
+	fn as_symbol(&self) -> char {
+		match self {
+			Criterion::NotSupported => '-',
+			Criterion::Unknown => '?',
+			Criterion::Supported => '+',
 		}
+	}
 
-		if !does_loader_match {
-			println!("[-] This mod doesn't support this modpack's loader");
+	fn is_passing(&self) -> bool {
+		match self {
+			Criterion::NotSupported => false,
+			Criterion::Unknown | Criterion::Supported => true,
 		}
+	}
 
-		if !does_version_match {
-			println!("[-] This mod doesn't support this modpack's game version");
+	fn and(self, other: Criterion) -> Criterion {
+		match (self, other) {
+			(Criterion::Supported, Criterion::Supported) => Criterion::Supported,
+
+			(Criterion::Unknown, Criterion::Unknown)
+			| (Criterion::Unknown, Criterion::Supported)
+			| (Criterion::Supported, Criterion::Unknown) => Criterion::Unknown,
+
+			_ => Criterion::NotSupported,
 		}
+	}
+}
 
-		if !any_versions_available {
-			println!("[-] There are no versions of this mod available for this modpack's loader and game version");
+impl From<bool> for Criterion {
+	fn from(value: bool) -> Self {
+		match value {
+			false => Criterion::NotSupported,
+			true => Criterion::Supported,
 		}
 	}
 }
