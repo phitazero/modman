@@ -26,12 +26,20 @@ impl VersionList {
 		let versions_str = format!("[\"{}\"]", modpack.version);
 		params.push(("game_versions", &versions_str));
 
-		requests::sync_get(&url, params)
+		let mut version_list: VersionList = requests::sync_get(&url, params)?;
+
+		for version in version_list.0.iter_mut() {
+			version.slug = String::from(slug);
+		}
+
+		Ok(version_list)
 	}
 }
 
 #[derive(Deserialize)]
 pub struct Version {
+	#[serde(default)]
+	slug: String,
 	version_number: String,
 	project_id: String,
 	#[serde(deserialize_with = "deserialize_dependencies")]
