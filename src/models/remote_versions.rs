@@ -36,7 +36,7 @@ pub struct Version {
 	project_id: String,
 	#[serde(deserialize_with = "deserialize_dependencies")]
 	dependencies: Vec<String>,
-	// file: VersionFile,
+	files: Vec<VersionFile>,
 }
 
 fn deserialize_dependencies<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
@@ -52,4 +52,11 @@ where D: Deserializer<'de> {
 			.map(|d| d.project_id)
 			.collect()	
 	)
+}
+
+#[derive(Deserialize)]
+struct VersionFile {
+	filename: String,
+	url: String,
+	primary: bool,
 }
