@@ -67,7 +67,9 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 		};
 
 		let any_versions_available = if does_version_match && does_loader_match {
-			!VersionList::fetch(&remote_mod.slug, modpack).is_empty()
+			!VersionList::fetch(&remote_mod.slug, modpack)
+			.expect("couldn't fetch versions") // gonna handle the result properly, i swear
+			.is_empty()
 		} else {
 			false
 		};

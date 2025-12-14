@@ -2,7 +2,6 @@ use crate::{Modpack, Version};
 use crate::requests;
 use serde::Deserialize;
 use std::ops::Deref;
-use std::process::exit;
 
 #[derive(Deserialize)]
 pub struct VersionList(Vec<Version>);
@@ -16,7 +15,7 @@ impl Deref for VersionList {
 }
 
 impl VersionList {
-	pub fn fetch(slug: &str, modpack: &Modpack) -> VersionList {
+	pub fn fetch(slug: &str, modpack: &Modpack) -> Result<VersionList, String> {
 		let url = format!("https://api.modrinth.com/v2/project/{}/version", slug);
 
 		let mut params: Vec<(&str, &str)> = Vec::new();
@@ -28,10 +27,5 @@ impl VersionList {
 		params.push(("game_versions", &versions_str));
 
 		requests::sync_get(&url, params)
-			.unwrap_or_else(|err_msg| {
-				eprintln!("error: couldn't fetch versions for \'{slug}\'");
-				eprintln!("{err_msg}");
-				exit(1);
-			})
 	}
 }
