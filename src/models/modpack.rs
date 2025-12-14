@@ -3,6 +3,7 @@ use std::fs::File;
 use std::process::exit;
 use crate::utils;
 use crate::MANIFEST_FILENAME;
+use crate::LocalMod;
 
 #[derive(Serialize, Deserialize)]
 pub struct Modpack {
@@ -65,7 +66,3 @@ impl Modpack {
 		})
 	}
 }
-
-// dummy, will be implemented properly in the future
-#[derive(Serialize, Deserialize)]
-pub struct LocalMod {}
