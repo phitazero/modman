@@ -63,7 +63,7 @@ where D: Deserializer<'de> {
 }
 
 #[derive(Deserialize)]
-struct VersionFile {
+pub struct VersionFile {
 	filename: String,
 	url: String,
 	primary: bool,
