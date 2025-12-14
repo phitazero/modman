@@ -68,3 +68,18 @@ pub struct VersionFile {
 	url: String,
 	primary: bool,
 }
+
+impl VersionFile {
+	pub fn select_primary(files: &[VersionFile]) -> Result<&VersionFile, String> {
+		let primary_opt = files
+			.iter()
+			.find(|f| f.primary);
+
+		if let Some(primary) = primary_opt {
+			return Ok(primary);
+		}
+
+		files.first()
+			.ok_or(String::from("no files in version"))
+	}
+}
