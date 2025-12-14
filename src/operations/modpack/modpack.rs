@@ -64,6 +64,7 @@ pub fn command_modpack(parsed_args: ParsedArgs) {
 		&minecraft_dir_path,
 		&[
 			"resourcepacks",
+			"shaderpacks",
 			"saves",
 			"screenshots",
 			"hotbar.nbt",
