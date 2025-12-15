@@ -39,12 +39,12 @@ impl VersionList {
 #[derive(Deserialize)]
 pub struct Version {
 	#[serde(default)]
-	slug: String,
-	version_number: String,
-	project_id: String,
+	pub slug: String,
+	pub version_number: String,
+	pub project_id: String,
 	#[serde(deserialize_with = "deserialize_dependencies")]
-	dependencies: Vec<String>,
-	files: Vec<VersionFile>,
+	pub dependencies: Vec<String>,
+	pub files: Vec<VersionFile>,
 }
 
 fn deserialize_dependencies<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
@@ -64,8 +64,8 @@ where D: Deserializer<'de> {
 
 #[derive(Deserialize)]
 pub struct VersionFile {
-	filename: String,
-	url: String,
+	pub filename: String,
+	pub url: String,
 	primary: bool,
 }
 
