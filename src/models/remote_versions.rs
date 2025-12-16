@@ -1,7 +1,6 @@
 use crate::Modpack;
 use crate::requests;
 use serde::{Deserialize, Deserializer};
-use std::ops::Deref;
 
 #[derive(Debug)]
 #[derive(Deserialize)]
