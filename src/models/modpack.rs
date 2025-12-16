@@ -5,6 +5,7 @@ use crate::utils;
 use crate::MANIFEST_FILENAME;
 use crate::LocalMod;
 
+#[derive(Debug)]
 #[derive(Serialize, Deserialize)]
 pub struct Modpack {
 	pub loader: String,

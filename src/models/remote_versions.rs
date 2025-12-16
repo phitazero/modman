@@ -3,6 +3,7 @@ use crate::requests;
 use serde::{Deserialize, Deserializer};
 use std::ops::Deref;
 
+#[derive(Debug)]
 #[derive(Deserialize)]
 pub struct VersionList(Vec<Version>);
 
@@ -37,6 +38,7 @@ impl VersionList {
 	}
 }
 
+#[derive(Debug)]
 #[derive(Deserialize)]
 pub struct Version {
 	#[serde(default)]
@@ -63,6 +65,7 @@ where D: Deserializer<'de> {
 	)
 }
 
+#[derive(Debug)]
 #[derive(Deserialize)]
 pub struct VersionFile {
 	pub filename: String,
