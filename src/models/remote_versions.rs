@@ -30,6 +30,11 @@ impl VersionList {
 	pub fn is_empty(&self) -> bool {
 		self.0.is_empty()
 	}
+
+	pub fn latest(&self) -> Result<&Version, String> {
+		self.0.last()
+			.ok_or(String::from("no versions present"))
+	}
 }
 
 #[derive(Deserialize)]
