@@ -6,14 +6,6 @@ use std::ops::Deref;
 #[derive(Deserialize)]
 pub struct VersionList(Vec<Version>);
 
-impl Deref for VersionList {
-	type Target = Vec<Version>;
-
-	fn deref(&self) -> &Self::Target {
-		&self.0
-	}
-}
-
 impl VersionList {
 	pub fn fetch(slug: &str, modpack: &Modpack) -> Result<VersionList, String> {
 		let url = format!("https://api.modrinth.com/v2/project/{}/version", slug);
@@ -33,6 +25,10 @@ impl VersionList {
 		}
 
 		Ok(version_list)
+	}
+
+	pub fn is_empty(&self) -> bool {
+		self.0.is_empty()
 	}
 }
 
