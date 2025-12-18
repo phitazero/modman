@@ -22,10 +22,10 @@ impl RemoteMod {
 			})
 	}
 
-	pub fn batch_fetch(slugs: &Vec<String>) -> BatchFetch {
+	pub fn batch_fetch(slugs: Vec<String>) -> BatchFetch {
 		BatchFetch {
 			n_slugs: slugs.len() as u8,
-			slugs_iter: slugs.clone().into_iter(),
+			slugs_iter: slugs.into_iter(),
 			failed: Vec::new(),
 		}
 	}

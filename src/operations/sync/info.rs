@@ -16,7 +16,7 @@ pub fn command_info(parsed_args: ParsedArgs) {
 
 	let modpack = Modpack::current();
 
-	for (slug, remote_mod_res) in RemoteMod::batch_fetch(args) {
+	for (slug, remote_mod_res) in RemoteMod::batch_fetch(args.clone()) {
 		match remote_mod_res {
 			Ok(remote_mod) => print_info(remote_mod, modpack.as_ref()),
 			Err(_) => println!("Skipping \'{slug}\'\n"),
