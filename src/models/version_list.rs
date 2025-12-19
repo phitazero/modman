@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use crate::{Modpack, Version};
+use crate::{Modpack, Version, RemoteMod};
 use crate::requests;
 
 #[derive(Debug)]
@@ -7,8 +7,8 @@ use crate::requests;
 pub struct VersionList(Vec<Version>);
 
 impl VersionList {
-	pub fn fetch(slug: &str, modpack: &Modpack) -> Result<VersionList, String> {
-		let url = format!("https://api.modrinth.com/v2/project/{}/version", slug);
+	pub fn fetch(slug_or_id: &str, modpack: &Modpack) -> Result<VersionList, String> {
+		let url = format!("https://api.modrinth.com/v2/project/{slug_or_id}/version");
 
 		let mut params: Vec<(&str, &str)> = Vec::new();
 
@@ -20,9 +20,11 @@ impl VersionList {
 
 		let mut version_list: VersionList = requests::sync_get(&url, params)?;
 
-		for version in version_list.0.iter_mut() {
-			version.slug = String::from(slug);
-		}
+		let slug = RemoteMod::fetch_slug(slug_or_id)?;
+		
+		version_list.0
+			.iter_mut()
+			.for_each(|v| v.slug = slug.clone());
 
 		Ok(version_list)
 	}
