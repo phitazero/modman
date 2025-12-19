@@ -76,10 +76,10 @@ impl Iterator for BatchVersionListFetch<'_> {
 				if n_failed > 0 {
 					eprintln!("warning: {n_failed} request(s) failed for slugs:");
 					eprintln!("{}", self.failed.join(", "));
-				}
 
-				if n_failed == self.n_slugs {
-					eprintln!("warning: all requests failed");
+					if n_failed == self.n_slugs {
+						eprintln!("warning: all requests failed");
+					}
 				}
 
 				None
