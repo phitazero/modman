@@ -19,7 +19,10 @@ pub fn command_info(parsed_args: ParsedArgs) {
 	for (slug, remote_mod_res) in RemoteMod::batch_fetch(args.clone()) {
 		match remote_mod_res {
 			Ok(remote_mod) => print_info(remote_mod, modpack.as_ref()),
-			Err(_) => println!("Skipping \'{slug}\'\n"),
+			Err(err_msg) => {
+				eprintln!("error: {err_msg}");
+				println!("Skipping \'{slug}\'\n");
+			},
 		}
 	}
 }

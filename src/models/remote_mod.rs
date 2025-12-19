@@ -16,9 +16,8 @@ impl RemoteMod {
 	pub fn fetch(slug: &str) -> Result<RemoteMod, String> {
 		let url = format!("https://api.modrinth.com/v2/project/{}", slug);
 		requests::sync_get(&url, Vec::new())
-			.inspect_err(|err_msg| {
-				eprintln!("error: failed to fetch info about \'{}\'", slug);
-				eprintln!("{}", err_msg);
+			.map_err(|err_msg| {
+				format!("failed to fetch info about \'{slug}\'\n{err_msg}")
 			})
 	}
 
