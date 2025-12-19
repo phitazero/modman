@@ -3,7 +3,7 @@ use std::fs::File;
 use std::process::exit;
 use crate::{utils, requests};
 use crate::MANIFEST_FILENAME;
-use crate::{LocalMod, Version, VersionFile};
+use crate::{LocalMod, Version, VersionFile, VersionList};
 
 #[derive(Debug)]
 #[derive(Serialize, Deserialize)]
@@ -101,6 +101,43 @@ impl Modpack {
 		self.mods.push(local_mod);
 		self.save();
 
+		Ok(())
+	}
+
+	pub fn install(&mut self, version: &Version) -> Result<(), String> {
+		eprintln!("Installing \'{}\'", version.slug);
+
+		self.mods
+			.iter_mut()
+			.find(|m| m.project_id == version.project_id)
+			.map(|m| {
+				eprintln!("Mod \'{}\' found as dependency, promoting to explicitly installed", m.slug);
+				m.is_dependency = false;
+			});
+
+		let installed: Vec<String> = self.mods
+			.iter()
+			.map(|m| m.project_id.clone())
+			.collect();
+
+		let mut to_install = version.dependencies.clone();
+		to_install.push(version.project_id.clone());
+		to_install.retain(|m| !installed.contains(m));
+
+		let mut versions_to_install: Vec<Version> = Vec::new();
+
+		for (_, version_list_res) in VersionList::batch_fetch(to_install, self) {
+			let version_list = version_list_res?;
+			let latest = version_list.into_latest()?;
+			versions_to_install.push(latest);
+		}
+
+		for version_to_install in versions_to_install.iter() {
+			let is_dependency = version_to_install.slug != version.slug;
+			self.install_single(version_to_install, is_dependency)?;
+		}
+
+		self.save();
 		Ok(())
 	}
 }
