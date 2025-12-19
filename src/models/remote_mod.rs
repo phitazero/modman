@@ -21,6 +21,11 @@ impl RemoteMod {
 			})
 	}
 
+	pub fn fetch_slug(slug_or_id: &str) -> Result<String, String> {
+		let remote_mod = RemoteMod::fetch(slug_or_id)?;
+		Ok(remote_mod.slug)
+	}
+
 	pub fn batch_fetch(slugs: Vec<String>) -> BatchFetch {
 		BatchFetch {
 			n_slugs: slugs.len() as u8,
