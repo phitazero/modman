@@ -40,8 +40,8 @@ impl VersionList {
 		self.0.is_empty()
 	}
 
-	pub fn latest(&self) -> Result<&Version, String> {
-		self.0.last()
+	pub fn into_latest(mut self) -> Result<Version, String> {
+		self.0.pop()
 			.ok_or(String::from("no versions present"))
 	}
 }
