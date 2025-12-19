@@ -8,4 +8,5 @@ pub struct LocalMod {
 	pub dependencies: Vec<String>,
 	pub file: String,
 	pub is_dependency: bool,
+	pub version_number: String,
 }

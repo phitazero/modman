@@ -95,6 +95,7 @@ impl Modpack {
 			dependencies: deps,
 			is_dependency: is_dep,
 			file: version_file.filename.clone(),
+			version_number: version.version_number.clone(),
 		};
 
 		self.mods.push(local_mod);
