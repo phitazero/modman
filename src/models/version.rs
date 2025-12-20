@@ -50,15 +50,6 @@ impl Version {
 
 		Ok(latest)
 	}
-
-	pub fn batch_fetch_latest(slugs: Vec<String>, modpack: &Modpack) -> BatchVersionFetch<'_> {
-		BatchVersionFetch {
-			n_slugs: slugs.len() as u8,
-			slugs_iter: slugs.into_iter(),
-			failed: Vec::new(),
-			modpack
-		}
-	}
 }
 
 fn deserialize_dependencies<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
@@ -96,45 +87,5 @@ impl VersionFile {
 
 		files.first()
 			.ok_or(String::from("no files in version"))
-	}
-}
-
-pub struct BatchVersionFetch<'a> {
-	pub failed: Vec<String>,
-	modpack: &'a Modpack,
-	slugs_iter: std::vec::IntoIter<String>,
-	n_slugs: u8,
-}
-
-impl Iterator for BatchVersionFetch<'_> {
-	type Item = (String, Result<Version, String>);
-
-	fn next(&mut self) -> Option<Self::Item> {
-		match self.slugs_iter.next() {
-			Some(slug) => {
-				let version = Version::fetch_latest(&slug, self.modpack);
-
-				if version.is_err() {
-					self.failed.push(slug.clone());
-				}
-
-				Some((slug, version))
-			},
-			// after iterating over all slugs
-			None => {
-				let n_failed = self.failed.len() as u8;
-
-				if n_failed > 0 {
-					eprintln!("warning: {n_failed} request(s) failed for slugs/IDs:");
-					eprintln!("{}", self.failed.join(", "));
-
-					if n_failed == self.n_slugs {
-						eprintln!("warning: all requests failed");
-					}
-				}
-
-				None
-			}
-		}
 	}
 }

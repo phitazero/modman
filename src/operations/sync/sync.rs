@@ -12,24 +12,17 @@ pub fn command_sync(parsed_args: ParsedArgs) {
 
 	let mut modpack = Modpack::require_current();
 
-	let mut to_install: Vec<(String, Version)> = Vec::new();
-
-	for (slug, version_res) in Version::batch_fetch_latest(args, &modpack) {
-		match version_res {
-			Ok(version) => to_install.push((slug, version)),
-			Err(err) => {
-				eprintln!("Couldn't fetch version for {slug}");
-				eprintln!("error: {err}");
-			}
-		}
-	}
-
-	for (slug, version) in to_install {
-		let result = modpack.install(version);
+	for slug in args {
+		let result = install_by_slug(&slug, &mut modpack);
 
 		if let Err(err) = result {
 			eprintln!("Couldn't install mod {slug}");
 			eprintln!("error: {err}");
 		}
 	}
+}
+
+fn install_by_slug(slug: &str, modpack: &mut Modpack) -> Result<(), String> {
+	let version = Version::fetch_latest(slug, modpack)?;
+	modpack.install(version)
 }

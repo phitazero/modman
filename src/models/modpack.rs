@@ -134,8 +134,9 @@ impl Modpack {
 
 		let mut versions_to_install: Vec<Version> = Vec::new();
 
-		for (_, dep_version) in Version::batch_fetch_latest(deps_to_install, self) {
-			versions_to_install.push(dep_version?)
+		for dependency_id in deps_to_install.iter() {
+			let dep_version = Version::fetch_latest(dependency_id, self)?;
+			versions_to_install.push(dep_version);
 		}
 
 		// required after version is moved
