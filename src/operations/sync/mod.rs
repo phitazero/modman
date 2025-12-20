@@ -3,11 +3,12 @@ use super::dispatcher;
 
 mod info;
 mod search;
+mod sync;
 
 pub fn dispatch(parsed_args: ParsedArgs) {
 	dispatcher::dispatch(
 		parsed_args,
-		_command_sync_dummy,
+		sync::command_sync,
 		&[
 			('i', info::command_info),
 			('s', search::command_search)
