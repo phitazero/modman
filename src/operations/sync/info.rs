@@ -1,4 +1,4 @@
-use crate::{RemoteMod, Modpack, VersionList};
+use crate::{RemoteMod, Modpack, Version};
 use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
@@ -65,8 +65,9 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 
 		let versions_available_criterion =
 			if game_version_criterion.is_passing() && loader_criterion.is_passing() {
-				match VersionList::fetch(&remote_mod.slug, modpack) {
-					Ok(version_list) => Criterion::from(!version_list.is_empty()),
+				match Version::fetch_n_available(&remote_mod.slug, modpack) {
+					Ok(0) => Criterion::NotSupported,
+					Ok(_) => Criterion::Supported,
 					Err(_) => Criterion::Unknown,
 				}
 			} else {

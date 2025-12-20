@@ -3,7 +3,7 @@ use std::fs::File;
 use std::process::exit;
 use crate::{utils, requests};
 use crate::MANIFEST_FILENAME;
-use crate::{LocalMod, Version, VersionFile, VersionList};
+use crate::{LocalMod, Version, VersionFile};
 
 #[derive(Debug)]
 #[derive(Serialize, Deserialize)]
@@ -126,10 +126,8 @@ impl Modpack {
 
 		let mut versions_to_install: Vec<Version> = Vec::new();
 
-		for (_, version_list_res) in VersionList::batch_fetch(to_install, self) {
-			let version_list = version_list_res?;
-			let latest = version_list.into_latest()?;
-			versions_to_install.push(latest);
+		for (_, version) in Version::batch_fetch_latest(to_install, self) {
+			versions_to_install.push(version?)
 		}
 
 		for version_to_install in versions_to_install.iter() {
