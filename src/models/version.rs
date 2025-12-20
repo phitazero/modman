@@ -36,6 +36,8 @@ impl Version {
 	}
 
 	pub fn fetch_latest(slug_or_id: &str, modpack: &Modpack) -> Result<Version, String> {
+		eprintln!("Fetching latest version for \'{slug_or_id}\'");
+
 		let version_list: Vec<Version> = Self::fetch_all_no_slugs(slug_or_id, modpack)?;
 
 		let mut latest = version_list
