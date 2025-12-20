@@ -101,6 +101,8 @@ impl Modpack {
 		self.mods.push(local_mod);
 		self.save();
 
+		eprintln!("Install single: done");
+
 		Ok(())
 	}
 
@@ -109,7 +111,7 @@ impl Modpack {
 
 		self.mods
 			.iter_mut()
-			.find(|m| m.project_id == version.project_id)
+			.find(|m| m.project_id == version.project_id && m.is_dependency)
 			.map(|m| {
 				eprintln!("Mod \'{}\' found as dependency, promoting to explicitly installed", m.slug);
 				m.is_dependency = false;
@@ -121,7 +123,14 @@ impl Modpack {
 			.collect();
 
 		let mut deps_to_install = version.dependencies.clone();
-		deps_to_install.retain(|m| !installed.contains(m));
+		deps_to_install.retain(|m| {
+			if installed.contains(m) {
+				eprintln!("Dependency \'{m}\' already installed");
+				false
+			} else {
+				true
+			}
+		});
 
 		let mut versions_to_install: Vec<Version> = Vec::new();
 
@@ -134,6 +143,8 @@ impl Modpack {
 
 		if !installed.contains(&version.project_id) {
 			versions_to_install.push(version);
+		} else {
+			eprintln!("Mod \'{}\' already installed", version_slug);
 		}
 
 		for version_to_install in versions_to_install.iter() {
@@ -142,6 +153,9 @@ impl Modpack {
 		}
 
 		self.save();
+
+		eprintln!("Install: done");
+
 		Ok(())
 	}
 }
