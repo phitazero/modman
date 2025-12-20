@@ -36,8 +36,6 @@ pub fn command_info(parsed_args: ParsedArgs) {
 }
 
 fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
-	println!("\n");
-
 	let title = remote_mod.get_title();
 	println!("[ {title} ({}) ]\n", remote_mod.slug);
 
@@ -92,6 +90,8 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 		println!("Any versions found:      [{}]", versions_available_criterion.as_symbol());
 		println!("IS THIS MOD COMPATIBLE:  [{}]", verdict.as_symbol());
 	}
+
+	print!("\n\n");
 }
 
 #[derive(Clone, Copy)]
