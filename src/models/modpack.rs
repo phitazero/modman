@@ -104,7 +104,7 @@ impl Modpack {
 		Ok(())
 	}
 
-	pub fn install(&mut self, version: &Version) -> Result<(), String> {
+	pub fn install(&mut self, version: Version) -> Result<(), String> {
 		eprintln!("Installing \'{}\'", version.slug);
 
 		self.mods
@@ -120,18 +120,24 @@ impl Modpack {
 			.map(|m| m.project_id.clone())
 			.collect();
 
-		let mut to_install = version.dependencies.clone();
-		to_install.push(version.project_id.clone());
-		to_install.retain(|m| !installed.contains(m));
+		let mut deps_to_install = version.dependencies.clone();
+		deps_to_install.retain(|m| !installed.contains(m));
 
 		let mut versions_to_install: Vec<Version> = Vec::new();
 
-		for (_, version) in Version::batch_fetch_latest(to_install, self) {
-			versions_to_install.push(version?)
+		for (_, dep_version) in Version::batch_fetch_latest(deps_to_install, self) {
+			versions_to_install.push(dep_version?)
+		}
+
+		// required after version is moved
+		let version_slug = version.slug.clone();
+
+		if !installed.contains(&version.project_id) {
+			versions_to_install.push(version);
 		}
 
 		for version_to_install in versions_to_install.iter() {
-			let is_dependency = version_to_install.slug != version.slug;
+			let is_dependency = version_to_install.slug != version_slug;
 			self.install_single(version_to_install, is_dependency)?;
 		}
 
