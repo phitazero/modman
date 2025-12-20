@@ -12,6 +12,7 @@ use models::remote_mod::RemoteMod;
 use models::modpack::Modpack;
 use models::version::{Version, VersionFile};
 use models::local_mod::LocalMod;
+use models::result_tracker::ResultTracker;
 
 const MANIFEST_FILENAME: &str = "modman-modpack.json";
 

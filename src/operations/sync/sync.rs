@@ -1,4 +1,4 @@
-use crate::{Modpack, Version};
+use crate::{Modpack, Version, ResultTracker};
 use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
@@ -12,14 +12,21 @@ pub fn command_sync(parsed_args: ParsedArgs) {
 
 	let mut modpack = Modpack::require_current();
 
-	for slug in args {
-		let result = install_by_slug(&slug, &mut modpack);
+	let mut result_tracker = ResultTracker::new();
+
+	for slug in args.iter() {
+		let result = install_by_slug(slug, &mut modpack);
+
+		result_tracker.register(slug, &result);
 
 		if let Err(err) = result {
 			eprintln!("Couldn't install mod {slug}");
 			eprintln!("error: {err}");
 		}
+
 	}
+
+	result_tracker.summarize();
 }
 
 fn install_by_slug(slug: &str, modpack: &mut Modpack) -> Result<(), String> {
