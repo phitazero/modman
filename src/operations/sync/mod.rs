@@ -15,5 +15,3 @@ pub fn dispatch(parsed_args: ParsedArgs) {
 		]
 	)
 }
-
-fn _command_sync_dummy(_: ParsedArgs) { todo!("sync command"); }
