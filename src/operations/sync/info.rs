@@ -1,4 +1,4 @@
-use crate::{RemoteMod, Modpack, Version};
+use crate::{RemoteMod, Modpack, Version, ResultTracker};
 use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
@@ -7,7 +7,7 @@ const PRINT_VERSION_CHUNKS: usize = 5;
 pub fn command_info(parsed_args: ParsedArgs) {
 	parsed_args.check_validity(&['S', 'i']);
 
-	let args = &parsed_args.args;
+	let args = parsed_args.args;
 
 	if args.len() == 0 {
 		eprintln!("error: no target specified");
@@ -16,7 +16,13 @@ pub fn command_info(parsed_args: ParsedArgs) {
 
 	let modpack = Modpack::current();
 
-	for (slug, remote_mod_res) in RemoteMod::batch_fetch(args.clone()) {
+	let mut result_tracker = ResultTracker::new();
+
+	for slug in args.iter() {
+		let remote_mod_res = RemoteMod::fetch(slug);
+
+		result_tracker.register(slug, &remote_mod_res);
+
 		match remote_mod_res {
 			Ok(remote_mod) => print_info(remote_mod, modpack.as_ref()),
 			Err(err_msg) => {
@@ -25,6 +31,8 @@ pub fn command_info(parsed_args: ParsedArgs) {
 			},
 		}
 	}
+
+	result_tracker.summarize();
 }
 
 fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {

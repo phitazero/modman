@@ -26,14 +26,6 @@ impl RemoteMod {
 		Ok(remote_mod.slug)
 	}
 
-	pub fn batch_fetch(slugs: Vec<String>) -> BatchFetch {
-		BatchFetch {
-			n_slugs: slugs.len() as u8,
-			slugs_iter: slugs.into_iter(),
-			failed: Vec::new(),
-		}
-	}
-
 	pub fn get_title(&self) -> String {
 		self.title
 			.clone()
@@ -85,44 +77,5 @@ impl RemoteMod {
 
 	pub fn format_loaders(&self) -> Option<String> {
 		self.loaders.clone().map(|loaders| loaders.join("  "))
-	}
-}
-
-pub struct BatchFetch {
-	slugs_iter: std::vec::IntoIter<String>,
-	failed: Vec<String>,
-	n_slugs: u8,
-}
-
-impl Iterator for BatchFetch {
-	type Item = (String, Result<RemoteMod, String>);
-
-	fn next(&mut self) -> Option<Self::Item> {
-		match self.slugs_iter.next() {
-			Some(slug) => {
-				let remote_mod = RemoteMod::fetch(&slug);
-
-				if remote_mod.is_err() {
-					self.failed.push(slug.clone());
-				}
-
-				Some((slug, remote_mod))
-			},
-			// after iterating over all mods
-			None => {
-				let n_failed = self.failed.len() as u8;
-
-				if n_failed > 0 {
-					eprintln!("warning: {n_failed} request(s) failed for slugs:");
-					eprintln!("{}", self.failed.join(", "));
-
-					if n_failed == self.n_slugs {
-						eprintln!("warning: all requests failed");
-					}
-				}
-
-				None
-			}
-		}
 	}
 }
