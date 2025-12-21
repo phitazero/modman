@@ -3,6 +3,8 @@ use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
 pub fn command_sync(parsed_args: ParsedArgs) {
+	parsed_args.check_validity(&['S']);
+
 	let args = parsed_args.args;
 
 	if args.len() == 0 {
