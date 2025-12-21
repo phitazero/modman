@@ -7,6 +7,8 @@ use crate::requests;
 pub struct Version {
 	#[serde(default)]
 	pub slug: String,
+	#[serde(default)]
+	pub title: String,
 	pub version_number: String,
 	pub project_id: String,
 	#[serde(deserialize_with = "deserialize_dependencies")]
@@ -45,8 +47,9 @@ impl Version {
 			.next()
 			.ok_or(String::from("no versions present"))?;
 
-		let slug = RemoteMod::fetch_slug(slug_or_id)?;
+		let (slug, title) = RemoteMod::fetch_slug_and_title(slug_or_id)?;
 		latest.slug = slug;
+		latest.title = title;
 
 		Ok(latest)
 	}

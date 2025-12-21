@@ -21,9 +21,12 @@ impl RemoteMod {
 			})
 	}
 
-	pub fn fetch_slug(slug_or_id: &str) -> Result<String, String> {
+	pub fn fetch_slug_and_title(slug_or_id: &str) -> Result<(String, String), String> {
 		let remote_mod = RemoteMod::fetch(slug_or_id)?;
-		Ok(remote_mod.slug)
+		Ok((
+			remote_mod.slug,
+			remote_mod.title,
+		))
 	}
 
 	pub fn get_description(&self) -> String {
