@@ -2,7 +2,7 @@ use crate::{Modpack};
 use crate::arg_parser::ParsedArgs;
 
 pub fn command_query(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['Q', 'd', 'e']);
+	parsed_args.check_validity(&['Q', 'd', 'e', 'q']);
 
 	let args = &parsed_args.args;
 
@@ -20,6 +20,12 @@ pub fn command_query(parsed_args: ParsedArgs) {
 	}
 
 	for local_mod in mods {
-		println!("{} {}", local_mod.slug, local_mod.version_number);
+		print!("{}", local_mod.slug);
+
+		if !parsed_args.option('q') {
+			print!(" {}", local_mod.version_number);
+		}
+
+		print!("\n");
 	}
 }
