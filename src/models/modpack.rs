@@ -67,7 +67,7 @@ impl Modpack {
 		})
 	}
 
-	pub fn install_single(&mut self, version: &Version, is_dep: bool) -> Result<(), String> {
+	pub fn install_single(&mut self, version: Version, is_dep: bool) -> Result<(), String> {
 		eprintln!(
 			"Installing single \'{}\' : \'{}\'  (dependency={is_dep})",
 			version.slug,
@@ -90,13 +90,13 @@ impl Modpack {
 		};
 
 		let local_mod = LocalMod {
-			slug: version.slug.clone(),
-			project_id: version.project_id.clone(),
+			slug: version.slug,
+			project_id: version.project_id,
 			dependencies: deps,
 			is_dependency: is_dep,
 			file: version_file.filename.clone(),
-			version_number: version.version_number.clone(),
-			title: version.title.clone(),
+			version_number: version.version_number,
+			title: version.title,
 		};
 
 		self.mods.push(local_mod);
@@ -149,7 +149,7 @@ impl Modpack {
 			eprintln!("Mod \'{}\' already installed", version_slug);
 		}
 
-		for version_to_install in versions_to_install.iter() {
+		for version_to_install in versions_to_install {
 			let is_dependency = version_to_install.slug != version_slug;
 			self.install_single(version_to_install, is_dependency)?;
 		}
