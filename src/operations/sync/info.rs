@@ -36,7 +36,7 @@ pub fn command_info(parsed_args: ParsedArgs) {
 }
 
 fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
-	let title = remote_mod.get_title();
+	let title = &remote_mod.title;
 	println!("[ {title} ({}) ]\n", remote_mod.slug);
 
 	println!("{}\n", remote_mod.get_description());

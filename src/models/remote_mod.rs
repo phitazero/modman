@@ -4,7 +4,7 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct RemoteMod {
 	pub slug: String,
-	title: Option<String>,
+	pub title: String,
 	description: Option<String>,
 	pub game_versions: Option<Vec<String>>,
 	pub loaders: Option<Vec<String>>,
@@ -24,12 +24,6 @@ impl RemoteMod {
 	pub fn fetch_slug(slug_or_id: &str) -> Result<String, String> {
 		let remote_mod = RemoteMod::fetch(slug_or_id)?;
 		Ok(remote_mod.slug)
-	}
-
-	pub fn get_title(&self) -> String {
-		self.title
-			.clone()
-			.unwrap_or("<No title>".to_string())
 	}
 
 	pub fn get_description(&self) -> String {
