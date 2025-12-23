@@ -35,7 +35,7 @@ impl Config {
 				path
 			},
 			None => {
-				eprintln!("error: path to .minecraft directory must be defined in config");
+				eprintln!("fatal: path to .minecraft directory must be defined in config");
 				exit(1);
 			}
 		}
@@ -48,7 +48,7 @@ pub fn config() -> Config {
 	match serde_json::from_reader::<File, Config>(config_file) {
 		Ok(config) => config,
 		Err(error) => {
-			eprint!("error: failed to parse config json: ");
+			eprint!("fatal: failed to parse config json: ");
 			eprintln!("{}", utils::format_json_error(error));
 			exit(1);
 		}
@@ -62,7 +62,7 @@ fn open_config() -> File {
 			.join("config.json"),
 
 		None => {
-			eprintln!("error: couldn't get base directories");
+			eprintln!("fatal: couldn't get base directories");
 			exit(1);
 		},
 	};
@@ -72,7 +72,7 @@ fn open_config() -> File {
 			let result = fs::create_dir_all(parent);
 
 			if result.is_err() {
-				eprintln!("error: couldn't create config directory");
+				eprintln!("fatal: couldn't create config directory");
 				exit(1);
 			}
 		}
@@ -82,7 +82,7 @@ fn open_config() -> File {
 		let config_file = match File::create(&config_path) {
 			Ok(file) => file,
 			Err(_) => {
-				eprintln!("error: couldn't create config file");
+				eprintln!("fatal: couldn't create config file");
 				exit(1);
 			}
 		};
@@ -90,7 +90,7 @@ fn open_config() -> File {
 		let result = serde_json::to_writer_pretty(&config_file, &DEFAULT_CONFIG);
 
 		if result.is_err() {
-			eprintln!("error: failed to write default config");
+			eprintln!("fatal: failed to write default config");
 			exit(1);
 		}
 	}
@@ -98,7 +98,7 @@ fn open_config() -> File {
 	let config_file = match File::open(config_path) {
 		Ok(file) => file,
 		Err(_) => {
-			eprintln!("error: couldn't open config file");
+			eprintln!("fatal: couldn't open config file");
 			exit(1);
 		}
 	};

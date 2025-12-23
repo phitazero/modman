@@ -24,7 +24,7 @@ fn main() {
 		Some('M') => operations::modpack::dispatch(parsed_args),
 		Some('Q') => operations::query::dispatch(parsed_args),
 		Some(other) => {
-			eprintln!("error: invalid operation \'{}\'", other);
+			eprintln!("fatal: invalid operation \'{}\'", other);
 			exit(1);
 		},
 
@@ -32,7 +32,7 @@ fn main() {
 			if parsed_args.options.contains(&'h') {
 				todo!("help");
 			} else {
-				eprintln!("error: no operation specified");
+				eprintln!("fatal: no operation specified");
 				exit(1);
 			}
 		}

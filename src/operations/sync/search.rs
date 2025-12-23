@@ -10,12 +10,12 @@ pub fn command_search(parsed_args: ParsedArgs) {
 	let args = &parsed_args.args;
 
 	if args.len() == 0 {
-		eprintln!("error: no target specified");
+		eprintln!("fatal: no target specified");
 		exit(1);
 	}
 
 	if args.len() > 1 {
-		eprintln!("error: too many arguments");
+		eprintln!("fatal: too many arguments");
 		exit(1);
 	}
 

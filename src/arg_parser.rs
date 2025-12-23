@@ -16,7 +16,7 @@ impl ParsedArgs {
 	pub fn check_validity(&self, allowed_options: &[char]) {
 		for option in self.options.iter() {
 			if !allowed_options.contains(option) {
-				eprintln!("error: invalid option: \'{}\'", option);
+				eprintln!("fatal: invalid option: \'{}\'", option);
 				exit(1);
 			}
 		}
@@ -68,7 +68,7 @@ pub fn parse() -> ParsedArgs {
 				if flag.is_ascii_uppercase() {
 					// throw an error if operation in already set
 					if operation_opt.is_some() {
-						eprintln!("error: only one operation may be used at a time");
+						eprintln!("fatal: only one operation may be used at a time");
 						exit(1);
 					}
 

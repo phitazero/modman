@@ -18,7 +18,7 @@ pub fn command_modpack(parsed_args: ParsedArgs) {
 	let args = &parsed_args.args;
 
 	if parsed_args.args.len() != 2 {
-		eprintln!("error: exactly 2 arguments required: loader, version");
+		eprintln!("fatal: exactly 2 arguments required: loader, version");
 		exit(1);
 	}
 
@@ -26,7 +26,7 @@ pub fn command_modpack(parsed_args: ParsedArgs) {
 	let version = &args[1];
 
 	if !LOADERS.contains(&loader.as_str()) {
-		eprintln!("error: loader \'{loader}\' not recognized");
+		eprintln!("fatal: loader \'{loader}\' not recognized");
 		eprintln!("Supported loaders: {}", LOADERS.join(", "));
 		exit(1);
 	}
@@ -42,20 +42,20 @@ pub fn command_modpack(parsed_args: ParsedArgs) {
 			.unwrap()
 			.kind() != std::io::ErrorKind::NotFound
 	{
-		eprintln!("error: failed to remove 'minecraft' directory");
+		eprintln!("fatal: failed to remove 'minecraft' directory");
 		exit(1);
 	}
 	let result = std::fs::create_dir(&minecraft_dir_path);
 
 	if result.is_err() {
-		eprintln!("error: failed to create 'minecraft' directory");
+		eprintln!("fatal: failed to create 'minecraft' directory");
 		exit(1);
 	}
 
 	let result = std::fs::create_dir(minecraft_dir_path.join("mods"));
 
 	if result.is_err() {
-		eprintln!("error: failed to create mods directory");
+		eprintln!("fatal: failed to create mods directory");
 		exit(1);
 	}
 
@@ -92,7 +92,7 @@ fn create_symlinks(
 		);
 
 		if result.is_err() {
-			eprintln!("error: couldn't symlink \'{item}\'");
+			eprintln!("fatal: couldn't symlink \'{item}\'");
 			exit(1);
 		}
 	}

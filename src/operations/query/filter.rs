@@ -13,7 +13,7 @@ pub fn filter_mods(mods: &mut Vec<LocalMod>, parsed_args: &ParsedArgs) {
 	}
 
 	if parsed_args.option(DEPENDENCY) && parsed_args.option(EXPLICIT) {
-		eprintln!("error: filtering for both explicitly installed and dependency mods is contradictory");
+		eprintln!("fatal: filtering for both explicitly installed and dependency mods is contradictory");
 		exit(1);
 	}
 

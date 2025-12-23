@@ -10,7 +10,7 @@ pub fn command_info(parsed_args: ParsedArgs) {
 	let args = parsed_args.args;
 
 	if args.len() == 0 {
-		eprintln!("error: no target specified");
+		eprintln!("fatal: no target specified");
 		exit(1);
 	}
 
