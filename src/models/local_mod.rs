@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug)]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct LocalMod {
 	pub slug: String,
 	pub title: String,
