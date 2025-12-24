@@ -37,9 +37,9 @@ pub fn command_info(parsed_args: ParsedArgs) {
 
 fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 	let title = &remote_mod.title;
-	println!("[ {title} ({}) ]\n", remote_mod.slug);
+	println!("========== {title} ({}) ==========", remote_mod.slug);
 
-	println!("{}\n", remote_mod.get_description());
+	println!("{}", remote_mod.get_description());
 
 	match remote_mod.format_game_versions::<PRINT_VERSION_CHUNKS>() {
 		Some(formatted) => println!("Supported game versions:\n{formatted}"),
@@ -47,17 +47,15 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 	}
 
 	match remote_mod.format_loaders() {
-		Some(formatted) => println!("Supported mod loaders:\n{formatted}"),
+		Some(formatted) => println!("Supported mod loaders:\n  {formatted}"),
 		None => println!("<Supported mod loaders not specified>"),
 	}
-
-	print!("\n");
 
 	println!("Client side: {}", remote_mod.get_client_side());
 	println!("Server side: {}", remote_mod.get_server_side());
 
 	if let Some(modpack) = modpack {
-		println!("\nChecking compatibility with current modpack");
+		println!("Compatibility with current modpack");
 
 		let game_version_criterion = match remote_mod.game_versions {
 			Some(versions) => Criterion::from(versions.contains(&modpack.version)),
@@ -85,10 +83,10 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 			.and(loader_criterion)
 			.and(versions_available_criterion);
 
-		println!("Game version supported:  [{}]", game_version_criterion.as_symbol());
-		println!("Loader supported:        [{}]", loader_criterion.as_symbol());
-		println!("Any versions found:      [{}]", versions_available_criterion.as_symbol());
-		println!("IS THIS MOD COMPATIBLE:  [{}]", verdict.as_symbol());
+		println!("  Game version supported:  [{}]", game_version_criterion.as_symbol());
+		println!("  Loader supported:        [{}]", loader_criterion.as_symbol());
+		println!("  Any versions found:      [{}]", versions_available_criterion.as_symbol());
+		println!("  IS THIS MOD COMPATIBLE:  [{}]", verdict.as_symbol());
 	}
 
 	print!("\n\n");

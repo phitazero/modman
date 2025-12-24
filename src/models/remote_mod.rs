@@ -57,16 +57,15 @@ impl RemoteMod {
 
 				for chunk in chunks {
 					for version in chunk {
-						formatted.push_str(version);
 						formatted.push_str("  ");
+						formatted.push_str(version);
 					}
 					formatted.push('\n');
 				}
 				for version in remainder {
-					formatted.push_str(version);
 					formatted.push_str("  ");
+					formatted.push_str(version);
 				}
-				formatted.push('\n');
 
 				formatted
 			})
