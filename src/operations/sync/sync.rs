@@ -26,6 +26,7 @@ pub fn command_sync(parsed_args: ParsedArgs) {
 			eprintln!("error: {err}");
 		}
 
+		print!("\n");
 	}
 
 	result_tracker.summarize();
