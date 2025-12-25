@@ -1,14 +1,12 @@
 use crate::arg_parser::ParsedArgs;
 use super::dispatcher;
 
+mod remove;
+
 pub fn dispatch(parsed_args: ParsedArgs) {
 	dispatcher::dispatch(
 		parsed_args,
-		_remove_command_dummy,
+		remove::command_remove,
 		&[]
 	);
-}
-
-fn _remove_command_dummy<T>(_: T) {
-	todo!("remove operation");
 }
