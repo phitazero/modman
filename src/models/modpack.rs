@@ -160,4 +160,35 @@ impl Modpack {
 
 		Ok(())
 	}
+
+	pub fn remove(&mut self, slug_or_id: &str) -> Result<(), String> {
+		eprintln!("Removing \'{slug_or_id}\'");
+
+		let mod_index = self.mods
+			.iter()
+			.position(|m| m.slug == slug_or_id || m.project_id == slug_or_id)
+			.ok_or_else(|| format!("mod \'{slug_or_id}\' not found"))?;
+
+		let local_mod = self.mods.swap_remove(mod_index);
+		self.save();
+
+		let filename = &local_mod.file;
+
+		let file_path = utils::current_dir()
+			.join("minecraft")
+			.join("mods")
+			.join(filename);
+
+		eprintln!("Removing mod file: \'{filename}\'");
+
+		if !file_path.exists() {
+			return Err(format!("file \'{filename}\' doesn't exist in mods directory"));
+		}
+
+		std::fs::remove_file(file_path)
+			.map_err(|err| format!("couldn't remove file \'{filename}\': {err}"))?;
+
+		eprintln!("Remove: done");
+		Ok(())
+	}
 }
