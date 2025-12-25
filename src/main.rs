@@ -23,6 +23,7 @@ fn main() {
 		Some('S') => operations::sync::dispatch(parsed_args),
 		Some('M') => operations::modpack::dispatch(parsed_args),
 		Some('Q') => operations::query::dispatch(parsed_args),
+		Some('R') => operations::remove::dispatch(parsed_args),
 		Some(other) => {
 			eprintln!("fatal: invalid operation \'{}\'", other);
 			exit(1);
