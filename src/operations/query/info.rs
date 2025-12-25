@@ -68,5 +68,10 @@ pub fn print_info(
 		}
 	}
 
+	let dependents = modpack.dependents_of(&local_mod.project_id);
+
+	println!("Dependents ({}):", dependents.len());
+	println!("  {}", dependents.join("\n  "));
+
 	print!("\n\n");
 }
