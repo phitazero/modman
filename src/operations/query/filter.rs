@@ -1,12 +1,15 @@
 use crate::arg_parser::ParsedArgs;
-use crate::LocalMod;
+use crate::{LocalMod, Modpack};
 use std::process::exit;
 
 pub const EXPLICIT: char = 'e';
 pub const DEPENDENCY: char = 'd';
+pub const UNREQUIRED: char = 't';
 
-pub fn filter_mods(mods: &mut Vec<LocalMod>, parsed_args: &ParsedArgs) {
+pub fn filter_mods(modpack: &Modpack, parsed_args: &ParsedArgs) -> Vec<LocalMod> {
 	let args = &parsed_args.args;
+
+	let mut mods = modpack.mods.clone();
 
 	if args.len() != 0 {
 		mods.retain(|m| args.contains(&m.slug));
@@ -22,4 +25,10 @@ pub fn filter_mods(mods: &mut Vec<LocalMod>, parsed_args: &ParsedArgs) {
 	} else if parsed_args.option(EXPLICIT) {
 		mods.retain(|m| !m.is_dependency);
 	}
+
+	if parsed_args.option(UNREQUIRED) {
+		mods.retain(|m| modpack.n_dependents(&m.project_id) == 0);
+	}
+
+	mods
 }

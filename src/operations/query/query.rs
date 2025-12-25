@@ -1,14 +1,12 @@
-use super::filter::{filter_mods, EXPLICIT, DEPENDENCY};
+use super::filter::{filter_mods, EXPLICIT, DEPENDENCY, UNREQUIRED};
 use crate::Modpack;
 use crate::arg_parser::ParsedArgs;
 
 pub fn command_query(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['Q', 'q', EXPLICIT, DEPENDENCY]);
+	parsed_args.check_validity(&['Q', 'q', EXPLICIT, DEPENDENCY, UNREQUIRED]);
 
 	let modpack = Modpack::require_current();
-	let mut mods = modpack.mods;
-
-	filter_mods(&mut mods, &parsed_args);
+	let mods = filter_mods(&modpack, &parsed_args);
 
 	for local_mod in mods {
 		print!("{}", local_mod.slug);
