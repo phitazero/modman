@@ -161,8 +161,8 @@ impl Modpack {
 		Ok(())
 	}
 
-	pub fn remove(&mut self, slug_or_id: &str) -> Result<(), String> {
-		eprintln!("Removing \'{slug_or_id}\'");
+	pub fn remove_single(&mut self, slug_or_id: &str) -> Result<(), String> {
+		eprintln!("Removing single \'{slug_or_id}\'");
 
 		let mod_index = self.mods
 			.iter()
@@ -188,7 +188,50 @@ impl Modpack {
 		std::fs::remove_file(file_path)
 			.map_err(|err| format!("couldn't remove file \'{filename}\': {err}"))?;
 
+		eprintln!("Remove single: done");
+		Ok(())
+	}
+
+	pub fn remove(&mut self, slug: &str, remove_deps: bool) -> Result<(), String> {
+		eprintln!("Removing \'{slug}\'");
+
+		let local_mod = self.mods
+			.iter()
+			.find(|m| m.slug == slug)
+			.ok_or_else(|| format!("mod \'{slug}\' not found"))?;
+
+		let mut to_remove = if remove_deps {
+			let mut deps_to_remove = local_mod.dependencies.clone();
+
+			deps_to_remove.retain(|project_id| {
+				self.mods
+					.iter()
+					.find(|m| m.project_id == *project_id)
+					.map_or(false, |m| m.is_dependency)
+			});
+
+			deps_to_remove
+				.retain(|project_id| self.n_dependents(project_id) == 1);
+
+			deps_to_remove
+		} else {
+			Vec::new()
+		};
+
+		to_remove.push(slug.to_string());
+
+		for slug_or_id in to_remove.iter() {
+			self.remove_single(slug_or_id)?;
+		}
+
 		eprintln!("Remove: done");
 		Ok(())
+	}
+
+	pub fn n_dependents(&self, project_id: &str) -> usize {
+		self.mods
+			.iter()
+			.filter(|m| m.dependencies.contains(&project_id.to_string()))
+			.count()
 	}
 }
