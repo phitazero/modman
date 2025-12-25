@@ -27,7 +27,7 @@ pub fn filter_mods(modpack: &Modpack, parsed_args: &ParsedArgs) -> Vec<LocalMod>
 	}
 
 	if parsed_args.option(UNREQUIRED) {
-		mods.retain(|m| modpack.n_dependents(&m.project_id) == 0);
+		mods.retain(|m| modpack.dependents_of(&m.project_id).len() == 0);
 	}
 
 	mods

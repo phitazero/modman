@@ -211,7 +211,7 @@ impl Modpack {
 			});
 
 			deps_to_remove
-				.retain(|project_id| self.n_dependents(project_id) == 1);
+				.retain(|project_id| self.dependents_of(project_id).len() == 1);
 
 			deps_to_remove
 		} else {
@@ -228,10 +228,11 @@ impl Modpack {
 		Ok(())
 	}
 
-	pub fn n_dependents(&self, project_id: &str) -> usize {
+	pub fn dependents_of(&self, project_id: &str) -> Vec<&str> {
 		self.mods
 			.iter()
 			.filter(|m| m.dependencies.contains(&project_id.to_string()))
-			.count()
+			.map(|m| m.slug.as_str())
+			.collect()
 	}
 }
