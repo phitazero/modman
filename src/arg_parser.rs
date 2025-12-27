@@ -57,7 +57,7 @@ pub fn parse() -> ParsedArgs {
 		}
 
 		else if arg.starts_with("--") {
-			unimplemented!("long flags will be implemented later");
+			unimplemented!("long flags will probably be implemented sometime");
 		}
 
 		else if arg.starts_with("-") {
