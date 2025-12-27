@@ -240,4 +240,35 @@ impl Modpack {
 			.map(|m| m.slug.as_str())
 			.collect()
 	}
+
+	pub fn filter_mods(
+		&self,
+		slugs: &Vec<String>,
+		explicit: bool,
+		dependency: bool,
+		unrequired: bool,
+	) -> Vec<LocalMod> {
+		let mut mods = self.mods.clone();
+
+		if slugs.len() != 0 {
+			mods.retain(|m| slugs.contains(&m.slug));
+		}
+
+		if dependency && explicit {
+			eprintln!("fatal: filtering for both explicitly installed and dependency mods is contradictory");
+			exit(1);
+		}
+
+		if dependency {
+			mods.retain(|m| m.is_dependency);
+		} else if explicit {
+			mods.retain(|m| !m.is_dependency);
+		}
+
+		if unrequired {
+			mods.retain(|m| self.dependents_of(&m.project_id).len() == 0);
+		}
+
+		mods
+	}
 }
