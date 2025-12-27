@@ -26,7 +26,7 @@ pub fn command_upgrade(parsed_args: ParsedArgs) {
 			eprintln!("error: {err}");
 		}
 
-		print!("\n");
+		eprint!("\n");
 	}
 
 	for slug in &slugs {
@@ -39,7 +39,7 @@ pub fn command_upgrade(parsed_args: ParsedArgs) {
 			eprintln!("error: {err}");
 		}
 
-		print!("\n");
+		eprint!("\n");
 	}
 
 	eprintln!("Removing:");

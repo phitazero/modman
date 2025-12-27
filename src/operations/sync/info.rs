@@ -32,6 +32,7 @@ pub fn command_info(parsed_args: ParsedArgs) {
 		}
 	}
 
+	eprint!("\n");
 	result_tracker.summarize();
 }
 

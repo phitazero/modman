@@ -17,8 +17,6 @@ impl<'a> ResultTracker<'a> {
 	}
 
 	pub fn summarize(&self) {
-		eprint!("\n");
-
 		let n_failed = self.failed.len();
 
 		if n_failed == 0 {
