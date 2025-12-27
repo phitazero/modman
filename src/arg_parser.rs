@@ -1,5 +1,6 @@
 use std::env;
 use std::process::exit;
+use std::io::{stdin, Read};
 
 #[derive(Debug)]
 pub struct ParsedArgs {
@@ -36,14 +37,19 @@ pub fn parse() -> ParsedArgs {
 	// is set to false after encountering --, ending flag parsing
 	let mut parse_flags = true;
 
+	// used to allow only one -
+	let mut allow_reading_from_stdin = true;
+
 	for arg in argv {
 		// if flag parsing is disabled treat everything as an arg
 		if !parse_flags {
 			args.push(arg);
 		}
 
-		else if arg == "-" {
-			unimplemented!("reading from stdin will be implemented later");
+		else if arg == "-" && allow_reading_from_stdin {
+			allow_reading_from_stdin = true;
+
+			args.append(&mut read_from_stdin());
 		}
 
 		else if arg == "--" {
@@ -89,4 +95,19 @@ pub fn parse() -> ParsedArgs {
 		options: options,
 		args: args,
 	}
+}
+
+fn read_from_stdin() -> Vec<String> {
+	let mut buf = String::new();
+	let result = stdin().read_to_string(&mut buf);
+
+	if result.is_err() {
+		eprintln!("error: couldn't read from stdin");
+		exit(1);
+	}
+
+	buf
+		.split('\n')
+		.map(|s| s.to_string())
+		.collect()
 }
