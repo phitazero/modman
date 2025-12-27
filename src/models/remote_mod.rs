@@ -50,7 +50,9 @@ impl RemoteMod {
 	pub fn format_game_versions<const N: usize>(&self) -> Option<String> {
 		self.game_versions
 			.clone()
-			.map(|game_versions| {
+			.map(|mut game_versions| {
+				game_versions.reverse();
+
 				let (chunks, remainder) = game_versions.as_chunks::<N>();
 
 				let mut formatted = String::new();
