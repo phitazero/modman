@@ -108,6 +108,7 @@ fn read_from_stdin() -> Vec<String> {
 
 	buf
 		.split('\n')
+		.filter(|s| !s.trim().is_empty())
 		.map(|s| s.to_string())
 		.collect()
 }
