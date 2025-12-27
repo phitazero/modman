@@ -161,6 +161,11 @@ impl Modpack {
 		Ok(())
 	}
 
+	pub fn install_by_slug(&mut self, slug: &str) -> Result<(), String> {
+		let version = Version::fetch_latest(slug, self)?;
+		self.install(version)
+	}
+
 	pub fn remove_single(&mut self, slug_or_id: &str) -> Result<(), String> {
 		eprintln!("Removing single \'{slug_or_id}\'");
 
