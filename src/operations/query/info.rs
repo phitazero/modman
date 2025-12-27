@@ -1,4 +1,4 @@
-use super::filter::{filter_mods, EXPLICIT, DEPENDENCY, UNREQUIRED};
+use super::filter::{filter_mods_by_options, EXPLICIT, DEPENDENCY, UNREQUIRED};
 use crate::{Modpack, LocalMod, RemoteMod};
 use crate::arg_parser::ParsedArgs;
 
@@ -6,7 +6,7 @@ pub fn command_info(parsed_args: ParsedArgs) {
 	parsed_args.check_validity(&['Q', 'i', 'f', EXPLICIT, DEPENDENCY, UNREQUIRED]);
 
 	let modpack = Modpack::require_current();
-	let mods = 	filter_mods(&modpack, &parsed_args);
+	let mods = filter_mods_by_options(&modpack, &parsed_args);
 
 	for local_mod in mods {
 		print_info(
