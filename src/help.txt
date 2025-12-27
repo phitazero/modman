@@ -1,0 +1,19 @@
+Usage: modman [OPTIONS] [ARGUMENTS]
+
+-S        - install mods
+  -u      - upgrade/reinstall mods
+  -i      - fetch detailed information about mods
+  -s      - search for mods
+    [-a]  - show all search results
+    [-d]  - don't filter search results according to current modpack parameters
+
+-R        - remove mods
+  [-s]    - also remove the dependencies
+
+-Q        - query already installed mods
+  -i      - show detailed info
+    [-f]  - fetch slugs for missing dependencies
+  [-q]    - don't show version numbers
+  [-d]    - dependencies [filter]
+  [-e]    - explicitly installed [filter]
+  [-t]    - unrequired by other mods [filter]

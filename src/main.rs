@@ -16,6 +16,8 @@ use models::result_tracker::ResultTracker;
 
 const MANIFEST_FILENAME: &str = "modman-modpack.json";
 
+const HELP_TEXT: &str = include_str!("help.txt");
+
 fn main() {
 	let parsed_args = arg_parser::parse();
 
@@ -31,7 +33,7 @@ fn main() {
 
 		None => {
 			if parsed_args.options.contains(&'h') {
-				todo!("help");
+				println!("{HELP_TEXT}");
 			} else {
 				eprintln!("fatal: no operation specified");
 				exit(1);
