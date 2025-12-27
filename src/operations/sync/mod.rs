@@ -4,6 +4,7 @@ use super::dispatcher;
 mod info;
 mod search;
 mod sync;
+mod upgrade;
 
 pub fn dispatch(parsed_args: ParsedArgs) {
 	dispatcher::dispatch(
@@ -11,7 +12,8 @@ pub fn dispatch(parsed_args: ParsedArgs) {
 		sync::command_sync,
 		&[
 			('i', info::command_info),
-			('s', search::command_search)
+			('s', search::command_search),
+			('u', upgrade::command_upgrade),
 		]
 	)
 }
