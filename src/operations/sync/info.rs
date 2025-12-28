@@ -7,7 +7,7 @@ const PRINT_VERSION_CHUNKS: usize = 5;
 pub fn command_info(parsed_args: ParsedArgs) {
 	parsed_args.check_validity(&['S', 'i']);
 
-	let args = parsed_args.args;
+	let args = &parsed_args.args;
 
 	if args.len() == 0 {
 		eprintln!("fatal: no target specified");
@@ -19,24 +19,24 @@ pub fn command_info(parsed_args: ParsedArgs) {
 	let mut result_tracker = ResultTracker::new();
 
 	for slug in args.iter() {
-		let remote_mod_res = RemoteMod::fetch(slug);
+		let result = print_info(slug, modpack.as_ref());
 
-		result_tracker.register(slug, &remote_mod_res);
+		result_tracker.register(slug, &result);
 
-		match remote_mod_res {
-			Ok(remote_mod) => print_info(remote_mod, modpack.as_ref()),
-			Err(err_msg) => {
-				eprintln!("error: {err_msg}");
-				println!("Skipping \'{slug}\'\n");
-			},
+		if let Err(err) = result {
+			println!("An error occured while getting info about \'{slug}\'");
+			eprintln!("error: {err}");
 		}
+
+		print!("\n\n");
 	}
 
-	eprint!("\n");
 	result_tracker.summarize();
 }
 
-fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
+fn print_info(slug: &str, modpack: Option<&Modpack>) -> Result<(), String> {
+	let remote_mod = RemoteMod::fetch(slug)?;
+
 	let title = &remote_mod.title;
 	println!("========== {title} ({}) ==========", remote_mod.slug);
 
@@ -90,7 +90,7 @@ fn print_info(remote_mod: RemoteMod, modpack: Option<&Modpack>) {
 		println!("  IS THIS MOD COMPATIBLE:  [{}]", verdict.as_symbol());
 	}
 
-	print!("\n\n");
+	Ok(())
 }
 
 #[derive(Clone, Copy)]
