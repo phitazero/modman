@@ -3,9 +3,9 @@ use crate::arg_parser::ParsedArgs;
 use std::process::exit;
 
 pub fn command_sync(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S']);
+	parsed_args.check_validity(&['S', 'j']);
 
-	let args = parsed_args.args;
+	let args = &parsed_args.args;
 
 	if args.len() == 0 {
 		eprintln!("fatal: no target specified");
@@ -16,8 +16,8 @@ pub fn command_sync(parsed_args: ParsedArgs) {
 
 	let mut result_tracker = ResultTracker::new();
 
-	for slug in args.iter() {
-		let result = modpack.install_by_slug(slug);
+	for slug in args {
+		let result = modpack.install_by_slug(slug, !parsed_args.option('j'));
 
 		result_tracker.register(slug, &result);
 

@@ -10,4 +10,5 @@ pub struct LocalMod {
 	pub file: String,
 	pub is_dependency: bool,
 	pub version_number: String,
+	pub auto_install_deps: bool,
 }

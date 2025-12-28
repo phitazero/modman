@@ -6,6 +6,7 @@ Usage: modman [OPTIONS] [ARGUMENTS]
   -s      - search for mods
     [-a]  - show all search results
     [-d]  - don't filter search results according to current modpack parameters
+  [-j]    - don't install dependencies
 
 -R        - remove mods
   [-s]    - also remove the dependencies

@@ -67,7 +67,10 @@ impl Modpack {
 		})
 	}
 
-	pub fn install_single(&mut self, version: Version, is_dep: bool) -> Result<(), String> {
+	pub fn install_single(
+		&mut self, version: Version,
+		is_dep: bool
+	) -> Result<&mut LocalMod, String> {
 		eprintln!(
 			"Installing single \'{}\' : \'{}\'  (dependency={is_dep})",
 			version.slug,
@@ -97,6 +100,7 @@ impl Modpack {
 			file: version_file.filename.clone(),
 			version_number: version.version_number,
 			title: version.title,
+			auto_install_deps: true,
 		};
 
 		self.mods.push(local_mod);
@@ -104,10 +108,11 @@ impl Modpack {
 
 		eprintln!("Install single: done");
 
-		Ok(())
+		// .unwrap() is safe because we just pushed the mod
+		Ok(self.mods.last_mut().unwrap())
 	}
 
-	pub fn install(&mut self, version: Version) -> Result<(), String> {
+	pub fn install(&mut self, version: Version, auto_install_deps: bool) -> Result<(), String> {
 		eprintln!("Installing \'{}\'", version.slug);
 
 		self.mods
@@ -123,15 +128,19 @@ impl Modpack {
 			.map(|m| m.project_id.clone())
 			.collect();
 
-		let mut deps_to_install = version.dependencies.clone();
-		deps_to_install.retain(|m| {
-			if installed.contains(m) {
-				eprintln!("Dependency \'{m}\' already installed");
-				false
-			} else {
-				true
-			}
-		});
+		let mut deps_to_install: Vec<String> = Vec::new();
+
+		if auto_install_deps {
+			deps_to_install = version.dependencies.clone();
+			deps_to_install.retain(|m| {
+				if installed.contains(m) {
+					eprintln!("Dependency \'{m}\' already installed");
+					false
+				} else {
+					true
+				}
+			});
+		}
 
 		let mut versions_to_install: Vec<Version> = Vec::new();
 
@@ -151,7 +160,8 @@ impl Modpack {
 
 		for version_to_install in versions_to_install {
 			let is_dependency = version_to_install.slug != version_slug;
-			self.install_single(version_to_install, is_dependency)?;
+			let installed = self.install_single(version_to_install, is_dependency)?;
+			installed.auto_install_deps = auto_install_deps;
 		}
 
 		self.save();
@@ -161,9 +171,13 @@ impl Modpack {
 		Ok(())
 	}
 
-	pub fn install_by_slug(&mut self, slug: &str) -> Result<(), String> {
+	pub fn install_by_slug(
+		&mut self,
+		slug: &str,
+		auto_install_deps: bool
+	) -> Result<(), String> {
 		let version = Version::fetch_latest(slug, self)?;
-		self.install(version)
+		self.install(version, auto_install_deps)
 	}
 
 	pub fn remove_single(&mut self, slug_or_id: &str) -> Result<(), String> {
