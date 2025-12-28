@@ -5,7 +5,7 @@ use std::process::exit;
 const PRINT_VERSION_CHUNKS: usize = 5;
 
 pub fn command_info(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 'i']);
+	parsed_args.check_validity(&['S', 'i', 'd']);
 
 	let args = &parsed_args.args;
 
@@ -19,7 +19,11 @@ pub fn command_info(parsed_args: ParsedArgs) {
 	let mut result_tracker = ResultTracker::new();
 
 	for slug in args.iter() {
-		let result = print_info(slug, modpack.as_ref());
+		let result = print_info(
+			slug,
+			modpack.as_ref(),
+			parsed_args.option('d'),
+		);
 
 		result_tracker.register(slug, &result);
 
@@ -34,7 +38,11 @@ pub fn command_info(parsed_args: ParsedArgs) {
 	result_tracker.summarize();
 }
 
-fn print_info(slug: &str, modpack: Option<&Modpack>) -> Result<(), String> {
+fn print_info(
+	slug: &str,
+	modpack: Option<&Modpack>,
+	fetch_deps: bool
+) -> Result<(), String> {
 	let remote_mod = RemoteMod::fetch(slug)?;
 
 	let title = &remote_mod.title;
@@ -88,6 +96,29 @@ fn print_info(slug: &str, modpack: Option<&Modpack>) -> Result<(), String> {
 		println!("  Loader supported:        [{}]", loader_criterion.as_symbol());
 		println!("  Any versions found:      [{}]", versions_available_criterion.as_symbol());
 		println!("  IS THIS MOD COMPATIBLE:  [{}]", verdict.as_symbol());
+	}
+
+	if fetch_deps {
+		let modpack = Modpack::require_current();
+
+		let latest_version = Version::fetch_latest(slug, &modpack)?;
+
+		// erase the fetch log message after it's finished
+		print!("\x1b[A"); // move cursor up 1 line
+		print!("\x1b[2K"); // erase the line
+
+		let dependency_ids = latest_version.dependencies;
+
+		println!("Dependencies ({}):", dependency_ids.len());
+
+		for dependency in dependency_ids {
+			println!("  {}",
+				match RemoteMod::fetch_slug_and_title(&dependency) {
+					Ok((slug, _)) => slug,
+					Err(_) => format!("{dependency} (couldn't fetch slug)"),
+				}
+			);
+		}
 	}
 
 	Ok(())
