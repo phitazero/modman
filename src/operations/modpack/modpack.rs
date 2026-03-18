@@ -1,7 +1,7 @@
 use crate::utils;
 use crate::config;
 use crate::Modpack;
-use crate::cli::modpack::ModpackInitArgs;
+use crate::cli::ModpackArgs;
 use std::process::exit;
 use std::path::PathBuf;
 
@@ -12,8 +12,12 @@ const LOADERS: [&str; 4] = [
 	"quilt",
 ];
 
-pub fn command_modpack(args: ModpackInitArgs) {
-	let ModpackInitArgs { loader, version } = args;
+pub fn command_modpack(args: ModpackArgs) {
+	// these options are required_unless_present = "info"
+	// and info routes into a different function
+	// so in theory this shouldn't panic
+	let loader = args.loader.unwrap();
+	let version = args.version.unwrap();
 
 	if !LOADERS.contains(&loader.as_str()) {
 		eprintln!("fatal: loader \'{loader}\' not recognized");

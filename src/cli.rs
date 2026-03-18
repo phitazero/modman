@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, Args};
 
 #[derive(Parser, Debug)]
 pub struct Cli {
@@ -9,189 +9,151 @@ pub struct Cli {
 #[derive(Subcommand, Debug)]
 pub enum Command {
 	#[command(short_flag = 'S')]
-	Sync(sync::SyncArgs),
+	Sync(SyncArgs),
 
 	#[command(short_flag = 'Q')]
-	Query(query::QueryArgs),
+	Query(QueryArgs),
 
 	#[command(short_flag = 'R')]
-	Remove(remove::RemoveArgs),
+	Remove(RemoveArgs),
 
 	#[command(short_flag = 'M')]
-	Modpack(modpack::ModpackArgs),
+	Modpack(ModpackArgs),
 }
 
-pub mod sync {
-	use clap::{Subcommand, Args};
+#[derive(Args, Debug)]
+pub struct SyncArgs {
+	// -S
 
-	#[derive(Args, Debug)]
-	pub struct SyncArgs {
-		#[command(subcommand)]
-		pub subcommand: SyncCommand,
+	/// Don't install dependencies
+	#[arg(short = 'j', long)]
+	#[arg(conflicts_with_all = ["upgrade", "info", "search"])]
+	pub no_deps: bool,
 
-		/// Don't install dependencies
-		#[arg(short = 'j', long)]
-		pub no_deps: bool,
-	}
 
-	#[derive(Subcommand, Debug)]
-	pub enum SyncCommand {
-		/// Install (add) mods
-		#[command(short_flag = 'a')]
-		Install(SyncInstallArgs),
+	// -Su
+	/// Reinstall/upgrade mods
+	#[arg(short, long)]
+	#[arg(conflicts_with_all = ["info", "search"])]
+	pub upgrade: bool,
 
-		/// Reinstall/upgrade mods
-		#[command(short_flag = 'u')]
-		Upgrade(SyncUpgradeArgs),
 
-		/// Fetch detailed info about a mod
-		#[command(short_flag = 'i')]
-		Info(SyncInfoArgs),
+	// -Si
 
-		/// Search for mods by a query
-		#[command(short_flag = 's')]
-		Search(SyncSearchArgs),
-	}
+	/// Fetch detailed info about a mod
+	#[arg(short, long)]
+	#[arg(conflicts_with_all = ["upgrade", "search"])]
+	pub info: bool,
 
-	#[derive(Args, Debug)]
-	pub struct SyncInstallArgs {
-		/// Slugs of the mods to install
-		#[arg(required = true)]
-		pub slugs: Vec<String>,
-	}
+	/// Fetch dependencies
+	#[arg(short, long, requires = "info")]
+	#[arg(conflicts_with_all = ["upgrade", "search"])]
+	pub fetch_deps: bool,
 
-	#[derive(Args, Debug)]
-	pub struct SyncSearchArgs {
-		/// Show all fetched search results
-		#[arg(short, long)]
-		pub all: bool,
 
-		/// Don't filter to be compatible with current modpack
-		#[arg(short = 'd', long)]
-		pub no_filter: bool,
+	// -Ss
 
-		/// Search query
-		pub query: String,
-	}
+	/// Search for mods by a query
+	#[arg(short, long)]
+	#[arg(conflicts_with_all = ["upgrade", "info"])]
+	pub search: bool,
 
-	#[derive(Args, Debug)]
-	pub struct SyncInfoArgs {
-		/// Slugs of the mod to print info about
-		pub slugs: Vec<String>,
+	/// Show all fetched search results
+	#[arg(short, long, requires = "search")]
+	#[arg(conflicts_with_all = ["upgrade", "info"])]
+	pub all: bool,
 
-		/// Fetch dependencies
-		#[arg(short = 'd', long)]
-		pub fetch_deps: bool,
-	}
+	/// Don't filter to be compatible with current modpack
+	#[arg(short = 'd', long, requires = "search")]
+	#[arg(conflicts_with_all = ["upgrade", "info"])]
+	pub no_filter: bool,
 
-	#[derive(Args, Debug)]
-	pub struct SyncUpgradeArgs {
-		/// Slugs of the mods to upgrade. Leave empty to affect all
-		pub slugs: Vec<String>,
-	}
+
+	// Args
+
+	#[arg(required_unless_present = "upgrade")]
+	pub args: Vec<String>,
 }
 
-pub mod query {
-	use clap::{Subcommand, Args};
+#[derive(Args, Debug)]
+pub struct QueryArgs {
+	// For all:
 
-	#[derive(Args, Debug)]
-	pub struct QueryArgs {
-		#[command(subcommand)]
-		pub subcommand: QueryCommand,
+	#[command(flatten)]
+	pub filters: Filters,
 
-		#[command(flatten)]
-		pub filters: Filters,
-	}
-		
-	#[derive(Args, Debug)]
-	pub struct Filters {
-		/// List mods installed as dependencies [filter]
-		#[arg(short, long)]
-		pub dependencies: bool,
 
-		/// List mods installed explicitly [filter]
-		#[arg(short, long)]
-		pub explicit: bool,
+	// -Q
 
-		/// List mods not required by any other mod [filter]
-		#[arg(short = 't', long)]
-		pub unrequired: bool,
-	}
+	/// Don't show version numbers
+	#[arg(short, long)]
+	#[arg(conflicts_with_all = ["info"])]
+	pub quiet: bool,
 
-	#[derive(Subcommand, Debug)]
-	pub enum QueryCommand {
-		/// List mods
-		#[command(short_flag = 'l')]
-		List(QueryListArgs),
 
-		/// Print detailed info about mods
-		#[command(short_flag = 'i')]
-		Info(QueryInfoArgs),
-	}
+	// -Qi
 
-	#[derive(Args, Debug)]
-	pub struct QueryListArgs {
-		/// Slugs of the mods to check. Leave empty to list all
-		pub slugs: Vec<String>,
+	#[arg(short, long)]
+	pub info: bool,
 
-		/// Don't show version numbers
-		#[arg(short, long)]
-		pub quiet: bool,
-	}
+	/// Fetch the slugs for missing dependencies
+	#[arg(short = 'f', long = "fetch")]
+	#[arg(requires = "info")]
+	pub fetch_missing_slugs: bool,
 
-	#[derive(Args, Debug)]
-	pub struct QueryInfoArgs {
-		/// Slugs of the mods to print info about. Leave empty to affect all
-		pub slugs: Vec<String>,
 
-		/// Fetch the slugs for missing dependencies
-		#[arg(short = 'f', long = "fetch")]
-		pub fetch_missing_slugs: bool,
-	}
+	// Args
+
+	pub args: Vec<String>,
 }
 
-pub mod remove {
-	use clap::Args;
+#[derive(Args, Debug)]
+pub struct Filters {
+	/// List mods installed as dependencies [filter]
+	#[arg(short, long)]
+	pub dependencies: bool,
 
-	#[derive(Args, Debug)]
-	pub struct RemoveArgs {
-		/// Slugs of the mods to remove
-		#[arg(required = true)]
-		pub slugs: Vec<String>,
+	/// List mods installed explicitly [filter]
+	#[arg(short, long)]
+	pub explicit: bool,
 
-		#[arg(short = 's', long = "deps")]
-		pub remove_dependencies: bool,
-	}
+	/// List mods not required by any other mod [filter]
+	#[arg(short = 't', long)]
+	pub unrequired: bool,
 }
 
-pub mod modpack {
-	use clap::{Subcommand, Args};
+#[derive(Args, Debug)]
+pub struct RemoveArgs {
+	/// Also remove dependencies
+	#[arg(short = 's', long = "deps")]
+	pub remove_dependencies: bool,
 
-	#[derive(Args, Debug)]
-	pub struct ModpackArgs {
-		#[command(subcommand)]
-		pub subcommand: ModpackCommand,
-	}
+	// Args
 
-	#[derive(Subcommand, Debug)]
-	pub enum ModpackCommand {
-		/// Initialize a modpack
-		#[command(short_flag = 'c')]
-		Init(ModpackInitArgs),
+	#[arg(required = true)]
+	pub args: Vec<String>,
+}
 
-		/// Print info about the current modpack
-		#[command(short_flag = 'i')]
-		Info,
-	}
+#[derive(Args, Debug)]
+pub struct ModpackArgs {
+	// -M
 
-	#[derive(Args, Debug)]
-	pub struct ModpackInitArgs {
-		/// Mod loader
-		#[arg(short, long)]
-		pub loader: String,
+	/// Mod loader
+	#[arg(short, long)]
+	#[arg(conflicts_with_all = ["info"])]
+	#[arg(required_unless_present = "info")]
+	pub loader: Option<String>,
 
-		/// Game version
-		#[arg(short, long)]
-		pub version: String,
-	}
+	/// Game version
+	#[arg(short, long)]
+	#[arg(conflicts_with_all = ["info"])]
+	#[arg(required_unless_present = "info")]
+	pub version: Option<String>,
+
+
+	// -Mi
+
+	/// Print info about the current modpack
+	#[arg(short, long)]
+	pub info: bool,
 }

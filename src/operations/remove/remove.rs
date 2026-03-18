@@ -1,12 +1,12 @@
 use crate::{Modpack, ResultTracker};
-use crate::cli::remove::RemoveArgs;
+use crate::cli::RemoveArgs;
 
 pub fn command_remove(args: RemoveArgs) {
 	let mut modpack = Modpack::require_current();
 
 	let mut result_tracker = ResultTracker::new();
 
-	for slug in &args.slugs {
+	for slug in &args.args {
 		let result = modpack.remove(
 			slug,
 			args.remove_dependencies,

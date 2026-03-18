@@ -1,11 +1,11 @@
 use crate::Modpack;
-use crate::cli::query::{Filters, QueryListArgs};
+use crate::cli::QueryArgs;
 
-pub fn command_query(args: QueryListArgs, filters: Filters) {
+pub fn command_query(args: QueryArgs) {
 	let modpack = Modpack::require_current();
 	let mods = modpack.filter_mods(
-		&args.slugs,
-		&filters
+		&args.args,
+		&args.filters
 	);
 
 	for local_mod in mods {

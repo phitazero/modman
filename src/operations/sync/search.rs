@@ -1,9 +1,9 @@
 use crate::requests;
-use crate::cli::sync::SyncSearchArgs;
+use crate::cli::SyncArgs;
 use crate::Modpack;
 use crate::config;
 
-pub fn command_search(args: SyncSearchArgs) {
+pub fn command_search(args: SyncArgs) {
 	let modpack = if args.no_filter {
 		None
 	} else {
@@ -16,7 +16,8 @@ pub fn command_search(args: SyncSearchArgs) {
 		config().get_mods_search_limit()
 	};
 
-	let result = search_by_slug(&args.query, modpack.as_ref(), limit);
+	// SyncArgs::args is required, so args.args[0] shouldn't OOB
+	let result = search_by_slug(&args.args[0], modpack.as_ref(), limit);
 
 	match result {
 		Ok((n_hits, n_total_hits)) => {

@@ -1,14 +1,14 @@
 use crate::{RemoteMod, Modpack, Version, ResultTracker};
-use crate::cli::sync::SyncInfoArgs;
+use crate::cli::SyncArgs;
 
 const PRINT_VERSION_CHUNKS: usize = 5;
 
-pub fn command_info(args: SyncInfoArgs) {
+pub fn command_info(args: SyncArgs) {
 	let modpack = Modpack::current();
 
 	let mut result_tracker = ResultTracker::new();
 
-	for slug in &args.slugs {
+	for slug in &args.args {
 		let result = print_info(
 			slug,
 			modpack.as_ref(),

@@ -1,12 +1,12 @@
 use crate::{Modpack, ResultTracker};
-use crate::cli::sync::SyncUpgradeArgs;
-use crate::cli::query::Filters;
+use crate::cli::SyncArgs;
+use crate::cli::Filters;
 
-pub fn command_upgrade(args: SyncUpgradeArgs) {
+pub fn command_upgrade(args: SyncArgs) {
 	let mut modpack = Modpack::require_current();
 
 	let slugs: Vec<(String, bool)> = modpack.filter_mods(
-		&args.slugs,
+		&args.args,
 		&Filters {
 			dependencies: false,
 			explicit: true,

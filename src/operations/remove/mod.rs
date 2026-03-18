@@ -1,4 +1,4 @@
-use crate::cli::remove::RemoveArgs;
+use crate::cli::RemoveArgs;
 
 mod remove;
 

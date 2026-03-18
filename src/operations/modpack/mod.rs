@@ -1,11 +1,12 @@
-use crate::cli::modpack::{ModpackArgs, ModpackCommand};
+use crate::cli::ModpackArgs;
 
 mod modpack;
 mod info;
 
 pub fn dispatch(args: ModpackArgs) {
-	match args.subcommand {
-		ModpackCommand::Init(args) => modpack::command_modpack(args),
-		ModpackCommand::Info => info::command_info(),
+	if args.info {
+		info::command_info()
+	} else {
+		modpack::command_modpack(args);
 	}
 }

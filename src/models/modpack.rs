@@ -4,7 +4,7 @@ use std::process::exit;
 use crate::{utils, requests};
 use crate::MANIFEST_FILENAME;
 use crate::{LocalMod, Version, VersionFile};
-use crate::cli::query::Filters;
+use crate::cli::Filters;
 
 #[derive(Debug)]
 #[derive(Serialize, Deserialize)]

@@ -1,15 +1,15 @@
 use crate::{Modpack, ResultTracker};
-use crate::cli::sync::SyncInstallArgs;
+use crate::cli::SyncArgs;
 
-pub fn command_sync(args: SyncInstallArgs, auto_install_deps: bool) {
+pub fn command_sync(args: SyncArgs) {
 	let mut modpack = Modpack::require_current();
 
 	let mut result_tracker = ResultTracker::new();
 
-	for slug in &args.slugs {
+	for slug in &args.args {
 		let result = modpack.install_by_slug(
 			slug,
-			auto_install_deps,
+			!args.no_deps,
 		);
 
 		result_tracker.register(slug, &result);
