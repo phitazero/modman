@@ -1,28 +1,18 @@
 use crate::{RemoteMod, Modpack, Version, ResultTracker};
-use crate::arg_parser::ParsedArgs;
-use std::process::exit;
+use crate::cli::sync::SyncInfoArgs;
 
 const PRINT_VERSION_CHUNKS: usize = 5;
 
-pub fn command_info(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 'i', 'd']);
-
-	let args = &parsed_args.args;
-
-	if args.len() == 0 {
-		eprintln!("fatal: no target specified");
-		exit(1);
-	}
-
+pub fn command_info(args: SyncInfoArgs) {
 	let modpack = Modpack::current();
 
 	let mut result_tracker = ResultTracker::new();
 
-	for slug in args.iter() {
+	for slug in &args.slugs {
 		let result = print_info(
 			slug,
 			modpack.as_ref(),
-			parsed_args.option('d'),
+			args.fetch_deps,
 		);
 
 		result_tracker.register(slug, &result);

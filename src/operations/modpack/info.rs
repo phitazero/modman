@@ -1,10 +1,7 @@
-use crate::arg_parser::ParsedArgs;
 use crate::Modpack;
 use crate::utils;
 
-pub fn command_info(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['M', 'i']);
-
+pub fn command_info() {
 	let modpack = Modpack::require_current();
 
 	/*

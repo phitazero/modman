@@ -1,15 +1,11 @@
-use crate::arg_parser::ParsedArgs;
-use super::dispatcher;
+use crate::cli::modpack::{ModpackArgs, ModpackCommand};
 
 mod modpack;
 mod info;
 
-pub fn dispatch(parsed_args: ParsedArgs) {
-	dispatcher::dispatch(
-		parsed_args,
-		modpack::command_modpack,
-		&[
-			('i', info::command_info),
-		]
-	);
+pub fn dispatch(args: ModpackArgs) {
+	match args.subcommand {
+		ModpackCommand::Init(args) => modpack::command_modpack(args),
+		ModpackCommand::Info => info::command_info(),
+	}
 }

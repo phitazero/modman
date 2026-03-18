@@ -1,12 +1,7 @@
-use crate::arg_parser::ParsedArgs;
-use super::dispatcher;
+use crate::cli::remove::RemoveArgs;
 
 mod remove;
 
-pub fn dispatch(parsed_args: ParsedArgs) {
-	dispatcher::dispatch(
-		parsed_args,
-		remove::command_remove,
-		&[]
-	);
+pub fn dispatch(args: RemoveArgs) {
+	remove::command_remove(args);
 }

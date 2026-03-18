@@ -1,7 +1,7 @@
-use crate::arg_parser::ParsedArgs;
 use crate::utils;
 use crate::config;
 use crate::Modpack;
+use crate::cli::modpack::ModpackInitArgs;
 use std::process::exit;
 use std::path::PathBuf;
 
@@ -12,18 +12,8 @@ const LOADERS: [&str; 4] = [
 	"quilt",
 ];
 
-pub fn command_modpack(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['M']);
-
-	let args = &parsed_args.args;
-
-	if parsed_args.args.len() != 2 {
-		eprintln!("fatal: exactly 2 arguments required: loader, version");
-		exit(1);
-	}
-
-	let loader = &args[0];
-	let version = &args[1];
+pub fn command_modpack(args: ModpackInitArgs) {
+	let ModpackInitArgs { loader, version } = args;
 
 	if !LOADERS.contains(&loader.as_str()) {
 		eprintln!("fatal: loader \'{loader}\' not recognized");

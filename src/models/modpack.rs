@@ -4,6 +4,7 @@ use std::process::exit;
 use crate::{utils, requests};
 use crate::MANIFEST_FILENAME;
 use crate::{LocalMod, Version, VersionFile};
+use crate::cli::query::Filters;
 
 #[derive(Debug)]
 #[derive(Serialize, Deserialize)]
@@ -257,10 +258,8 @@ impl Modpack {
 
 	pub fn filter_mods(
 		&self,
-		slugs: &Vec<String>,
-		explicit: bool,
-		dependency: bool,
-		unrequired: bool,
+		slugs: &[String],
+		filters: &Filters,
 	) -> Vec<LocalMod> {
 		let mut mods = self.mods.clone();
 
@@ -268,18 +267,18 @@ impl Modpack {
 			mods.retain(|m| slugs.contains(&m.slug));
 		}
 
-		if dependency && explicit {
+		if filters.dependencies && filters.explicit {
 			eprintln!("fatal: filtering for both explicitly installed and dependency mods is contradictory");
 			exit(1);
 		}
 
-		if dependency {
+		if filters.dependencies {
 			mods.retain(|m| m.is_dependency);
-		} else if explicit {
+		} else if filters.explicit {
 			mods.retain(|m| !m.is_dependency);
 		}
 
-		if unrequired {
+		if filters.unrequired {
 			mods.retain(|m| self.dependents_of(&m.project_id).len() == 0);
 		}
 

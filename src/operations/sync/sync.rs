@@ -1,23 +1,16 @@
 use crate::{Modpack, ResultTracker};
-use crate::arg_parser::ParsedArgs;
-use std::process::exit;
+use crate::cli::sync::SyncInstallArgs;
 
-pub fn command_sync(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 'j']);
-
-	let args = &parsed_args.args;
-
-	if args.len() == 0 {
-		eprintln!("fatal: no target specified");
-		exit(1);
-	}
-
+pub fn command_sync(args: SyncInstallArgs, auto_install_deps: bool) {
 	let mut modpack = Modpack::require_current();
 
 	let mut result_tracker = ResultTracker::new();
 
-	for slug in args {
-		let result = modpack.install_by_slug(slug, !parsed_args.option('j'));
+	for slug in &args.slugs {
+		let result = modpack.install_by_slug(
+			slug,
+			auto_install_deps,
+		);
 
 		result_tracker.register(slug, &result);
 

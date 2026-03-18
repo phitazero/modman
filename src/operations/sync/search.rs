@@ -1,37 +1,22 @@
 use crate::requests;
-use crate::arg_parser::ParsedArgs;
+use crate::cli::sync::SyncSearchArgs;
 use crate::Modpack;
 use crate::config;
-use std::process::exit;
 
-pub fn command_search(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 's', 'a', 'd']);
-
-	let args = &parsed_args.args;
-
-	if args.len() == 0 {
-		eprintln!("fatal: no target specified");
-		exit(1);
-	}
-
-	if args.len() > 1 {
-		eprintln!("fatal: too many arguments");
-		exit(1);
-	}
-
-	let slug = &args[0];
-
-	let modpack = match parsed_args.option('d') {
-		false => Modpack::current(),
-		true => None,
+pub fn command_search(args: SyncSearchArgs) {
+	let modpack = if args.no_filter {
+		None
+	} else {
+		Modpack::current()
 	};
 
-	let limit: u8 = match parsed_args.option('a') {
-		false => config().get_mods_search_limit(),
-		true => 100, // max allowed by the API
+	let limit = if args.all {
+		100 // max allowed by the API
+	} else {
+		config().get_mods_search_limit()
 	};
 
-	let result = search_by_slug(slug, modpack.as_ref(), limit);
+	let result = search_by_slug(&args.query, modpack.as_ref(), limit);
 
 	match result {
 		Ok((n_hits, n_total_hits)) => {

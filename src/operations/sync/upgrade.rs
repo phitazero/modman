@@ -1,14 +1,17 @@
 use crate::{Modpack, ResultTracker};
-use crate::arg_parser::ParsedArgs;
+use crate::cli::sync::SyncUpgradeArgs;
+use crate::cli::query::Filters;
 
-pub fn command_upgrade(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['S', 'u', 'j']);
-
+pub fn command_upgrade(args: SyncUpgradeArgs) {
 	let mut modpack = Modpack::require_current();
 
 	let slugs: Vec<(String, bool)> = modpack.filter_mods(
-		&parsed_args.args,
-		true, false, false, // only explicitly installed
+		&args.slugs,
+		&Filters {
+			dependencies: false,
+			explicit: true,
+			unrequired: false
+		},
 	).into_iter()
 		.map(|m| (m.slug, m.auto_install_deps))
 		.collect();

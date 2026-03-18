@@ -1,18 +1,18 @@
-use super::filter::{filter_mods_by_options, EXPLICIT, DEPENDENCY, UNREQUIRED};
 use crate::{Modpack, LocalMod, RemoteMod};
-use crate::arg_parser::ParsedArgs;
+use crate::cli::query::{Filters, QueryInfoArgs};
 
-pub fn command_info(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['Q', 'i', 'f', EXPLICIT, DEPENDENCY, UNREQUIRED]);
-
+pub fn command_info(args: QueryInfoArgs, filters: Filters) {
 	let modpack = Modpack::require_current();
-	let mods = filter_mods_by_options(&modpack, &parsed_args);
+	let mods = modpack.filter_mods(
+		&args.slugs,
+		&filters,
+	);
 
 	for local_mod in mods {
 		print_info(
 			&local_mod,
 			&modpack,
-			parsed_args.option('f'),
+			args.fetch_missing_slugs,
 		);
 	}
 }

@@ -1,17 +1,17 @@
-use super::filter::{filter_mods_by_options, EXPLICIT, DEPENDENCY, UNREQUIRED};
 use crate::Modpack;
-use crate::arg_parser::ParsedArgs;
+use crate::cli::query::{Filters, QueryListArgs};
 
-pub fn command_query(parsed_args: ParsedArgs) {
-	parsed_args.check_validity(&['Q', 'q', EXPLICIT, DEPENDENCY, UNREQUIRED]);
-
+pub fn command_query(args: QueryListArgs, filters: Filters) {
 	let modpack = Modpack::require_current();
-	let mods = filter_mods_by_options(&modpack, &parsed_args);
+	let mods = modpack.filter_mods(
+		&args.slugs,
+		&filters
+	);
 
 	for local_mod in mods {
 		print!("{}", local_mod.slug);
 
-		if !parsed_args.option('q') {
+		if !args.quiet {
 			print!(" {}", local_mod.version_number);
 		}
 
