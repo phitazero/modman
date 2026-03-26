@@ -15,7 +15,7 @@ Used with Prism Launcher[^1].
 
 `cd` into the instance's directory.  
 `modman -M -l <loader> -v <version>`  
-will create a modpack and symlink few things I want to have shared (worls, resoursepacks, sharders, etc.) into a shared directory.
+will create a modpack and symlink few things I want to have shared (worlds, resourcepacks, shaders, etc.) into a shared directory.
 
 After that you'll be able to search for mods with  
 `modman -Ss <query>`,  
@@ -58,7 +58,7 @@ With `-s` also removes the dependencies unused by any other mods.
 
 ## `-Q`
 ### `-Q [slugs]`
-Prints the slugs and version numbers of the corresponding mods (if present and not filtered out). 
+Prints the slugs and version numbers of the corresponding mods (if present and not filtered out).  
 If slugs not specified - performs the operation on all mods.    
 To print without version numbers use `-q`.
 
